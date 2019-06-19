@@ -1,5 +1,6 @@
 package com.exaud.githubclient.models;
 
+
 public class Repository {
     private String name;
     private String description;

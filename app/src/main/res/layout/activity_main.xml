@@ -7,24 +7,23 @@
     tools:context=".GithubClientActivity">
 
 
-
     <EditText
         android:id="@+id/search_text"
         android:layout_width="230dp"
         android:layout_height="45dp"
         android:ems="10"
-        android:text="googlesamples"
         android:inputType="textPersonName"
-        android:hint="@string/github_username"
+        android:text="googlesamples"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        tools:ignore="HardcodedText" />
 
     <Button
         android:id="@+id/button_show"
         android:layout_width="130dp"
         android:layout_height="45dp"
-        android:text="@string/find"
         android:background="@drawable/button_box"
+        android:text="@string/find"
         android:textColor="@color/backColor"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/search_text"
@@ -34,9 +33,18 @@
     <android.support.v7.widget.RecyclerView
         android:id="@+id/repository_recycler_view"
         android:layout_width="match_parent"
-        android:layout_height="476dp"
-        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_height="432dp"
+        android:layout_marginTop="45dp"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/button_show" />
+
+    <CheckBox
+        android:id="@+id/user_check_box"
+        android:layout_width="wrap_content"
+        android:layout_height="36dp"
+        android:text="@string/checkbox_user"
+        android:checked="true"
+        app:layout_constraintBottom_toTopOf="@+id/repository_recycler_view"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/search_text" />
 </android.support.constraint.ConstraintLayout>

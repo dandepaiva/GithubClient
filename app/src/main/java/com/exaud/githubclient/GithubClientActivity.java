@@ -1,15 +1,14 @@
 package com.exaud.githubclient;
 
 import android.os.Bundle;
-import android.os.PersistableBundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.android.volley.VolleyError;
 import com.exaud.githubclient.models.Repository;
 
 import java.util.ArrayList;
@@ -27,8 +26,9 @@ public class GithubClientActivity extends AppCompatActivity implements GithubRep
         Button showButton = findViewById(R.id.button_show);
 
         TextView searchTextView = findViewById(R.id.search_text);
-
+        CheckBox userCheckBox = findViewById(R.id.user_check_box);
         RecyclerView recyclerView = findViewById(R.id.repository_recycler_view);
+
         recyclerView.setHasFixedSize(true);
 
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this);
@@ -38,8 +38,15 @@ public class GithubClientActivity extends AppCompatActivity implements GithubRep
         recyclerView.setAdapter(githubAdapter);
 
         showButton.setOnClickListener(v -> {
+
             String searchString = searchTextView.getText().toString();
+            // if the client want to search for a user
+            if(userCheckBox.isChecked()) {
+                showToast("CHECKBOX TRUE");
+            }
+
             GithubRepository.getInstance().loadDataNodes(GithubClientActivity.this, searchString);
+
         });
     }
 

@@ -3,4 +3,5 @@
     <string name="github_username">Github Username</string>
     <string name="find">Find</string>
     <string name="no_public_repositories_message">This user has no public repositories.</string>
+    <string name="checkbox_user">are you looking for a user?</string>
 </resources>
