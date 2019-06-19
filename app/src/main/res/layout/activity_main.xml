@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="360dp"
+    android:layout_height="wrap_content"
+    tools:context=".GithubClientActivity">
+
+
+
+    <EditText
+        android:id="@+id/search_text"
+        android:layout_width="230dp"
+        android:layout_height="45dp"
+        android:ems="10"
+        android:text="googlesamples"
+        android:inputType="textPersonName"
+        android:hint="@string/github_username"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <Button
+        android:id="@+id/button_show"
+        android:layout_width="130dp"
+        android:layout_height="45dp"
+        android:text="@string/find"
+        android:background="@drawable/button_box"
+        android:textColor="@color/backColor"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/search_text"
+        app:layout_constraintTop_toTopOf="parent" />
+
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/repository_recycler_view"
+        android:layout_width="match_parent"
+        android:layout_height="476dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/search_text" />
+</android.support.constraint.ConstraintLayout>
