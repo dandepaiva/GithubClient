@@ -1,103 +1,126 @@
 package com.exaud.githubclient;
 
+import android.content.Intent;
 import android.util.Log;
-import android.widget.Toast;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.concurrent.Executor;
-import java.util.concurrent.Executors;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.exaud.githubclient.models.Commit;
 import com.exaud.githubclient.models.Repository;
 import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
+
+import static android.support.v4.content.ContextCompat.startActivity;
 
 
 public class GithubRepository {
+    private static final String TAG = "REPOSITORY";
     Executor executor = Executors.newFixedThreadPool(3);
+    String user;
     //private Set<RepositoryCallback> callbacks = new HashSet<>();
 
-    private GithubRepository(){}
-    static GithubRepository getInstance(){return Singleton.INSTANCE;}
+    private GithubRepository() {
+    }
 
-    void loadDataNodes(RepositoryCallback callback, String user){
+    static GithubRepository getInstance() {
+        return Singleton.INSTANCE;
+    }
+
+    void loadDataNodes(RepositoryCallback callback, String user) {
         //addToSet(callback);
 
         RequestQueue queue = Volley.newRequestQueue(GithubClientApplication.getContext());
         String url = "https://api.github.com/users/%1$s/repos";
+        this.user = user;
 
         Runnable runnable = () -> {
+            StringRequest stringRequest = new StringRequest(Request.Method.GET, String.format(url, user),
+                    response -> {
+                        // Type repositoryType = new TypeToken<ArrayList<Repository>>(){}.getType();
+                        Gson gson = new Gson();
 
+                        Repository[] repositories = gson.fromJson(response, Repository[].class);
+                        callback.showDataNodes(Arrays.asList(repositories));
+                    },
+                    error -> {
+                        String errorFormat = error.getLocalizedMessage();
+                        if (errorFormat == null) {
+                            errorFormat = user + " might not exist.";
+                        }
+                        callback.onError(errorFormat);
+                    }
+            );
+            queue.add(stringRequest);
+        };
+        executor.execute(runnable);
+    }
+
+
+    void loadCommits(Repository repository) {
+        RequestQueue queue = Volley.newRequestQueue(GithubClientApplication.getContext());
+        String url = "https://api.github.com/repos/%1$s/%2$s/commits";
+
+        Runnable runnable = () -> {
+            StringRequest stringRequest = new StringRequest(Request.Method.GET, String.format(url, user, repository.getName()),
+                    response -> {
+                        Gson gson = new Gson();
+
+                        Commit[] commits = gson.fromJson(response, Commit[].class);
+
+                        Intent commitListActivity = new Intent(GithubClientApplication.getContext(), CommitListActivity.class);
+                        commitListActivity.putExtra(GithubClientActivity.COMMITLIST, commits);
+                        GithubClientApplication.getContext().startActivity(commitListActivity);
+                    },
+                    error -> {
+                        String errorFormat = error.getLocalizedMessage();
+                        if (errorFormat == null) {
+                            errorFormat = user + " might not exist.";
+                        }
+                    }
+            );
+            queue.add(stringRequest);
+        };
+        executor.execute(runnable);
+    }
+
+    public interface RepositoryCallback {
+        void showDataNodes(List<Repository> repositories);
+        void onError(String message);
+    }
+
+    private static class Singleton {
+        private static final GithubRepository INSTANCE = new GithubRepository();
+    }
+
+    /*private void lsdask(Class baseModelClass) {
+        Runnable runnable = () -> {
             StringRequest stringRequest = new StringRequest(Request.Method.GET, String.format(url,user),
                     response -> {
-                        Type repositoryType = new TypeToken<ArrayList<Repository>>(){}.getType();
+                        // Type repositoryType = new TypeToken<ArrayList<Repository>>(){}.getType();
                         Gson gson = new Gson();
-                        ArrayList<Repository> repositoryArrayList = gson.fromJson(response, repositoryType);
-                        callback.showDataNodes(repositoryArrayList);
+
+                        BaseModel repos = new BaseModel<>(Repository.class);
+                        BaseModel[] baseModels = gson.fromJson(response, BaseModel[].class);
+
+                        volleyCallback.onBaseModelLoaded(baseModels);
                     },
                     error -> {
                         String errorFormat = error.getLocalizedMessage();
                         if (errorFormat==null) {
                             errorFormat = user + " might not exist.";
                         }
-                            callback.onError(errorFormat);
+                        callback.onError(errorFormat);
                     }
             );
             queue.add(stringRequest);
-
-            //String dataNodeFile = loadAsset(user);
-
-
         };
-
         executor.execute(runnable);
-    }
-
-    /*
-    void addToSet(RepositoryCallback dataNodeShower){
-        callbacks.add(dataNodeShower);
-    }*/
-    /*
-    void removeFromSet(RepositoryCallback showDataNode){
-        showDataNodeList.remove(showDataNode);
     }*/
 
-
-
-    /**
-     * Read a file containing JSON data
-     * @param file the file to be read
-     * @return String with the content of file
-     */
-    private String loadAsset(String file) {
-        String asset = null;
-        try(InputStream inputStream
-                    = GithubClientApplication.getContext().getAssets().open(file)){
-            int size = inputStream.available();
-            byte[] buffer = new byte[size];
-            inputStream.read(buffer);
-            asset = new String(buffer);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return asset;
-    }
-
-    public interface RepositoryCallback {
-        void showDataNodes(ArrayList<Repository> repositories);
-        void onError(String message);
-    }
-
-
-    private static class Singleton{
-        private static final GithubRepository INSTANCE = new GithubRepository();
-    }
 }

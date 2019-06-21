@@ -1,7 +1,6 @@
 package com.exaud.githubclient.models;
 
-
-public class Repository {
+public class Repository extends BaseModel {
     private String name;
     private String description;
 

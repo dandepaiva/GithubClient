@@ -4,18 +4,19 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.exaud.githubclient.models.Commit;
 import com.exaud.githubclient.models.Repository;
 
-import java.util.ArrayList;
+import java.util.List;
 
 public class GithubClientActivity extends AppCompatActivity implements GithubRepository.RepositoryCallback {
-
-    private static final String TAG = "ffs";
+    public final static String COMMITLIST = "com.exauc.githubclient.COMMITLIST";
     private GithubClientAdapter githubAdapter;
 
     @Override
@@ -41,18 +42,17 @@ public class GithubClientActivity extends AppCompatActivity implements GithubRep
 
             String searchString = searchTextView.getText().toString();
             // if the client want to search for a user
-            if(userCheckBox.isChecked()) {
+            if (userCheckBox.isChecked()) {
                 showToast("CHECKBOX TRUE");
             }
 
             GithubRepository.getInstance().loadDataNodes(GithubClientActivity.this, searchString);
-
         });
     }
 
     @Override
-    public void showDataNodes(ArrayList<Repository> repositories) {
-        if (repositories.size()==0){
+    public void showDataNodes(List<Repository> repositories) {
+        if (repositories.size() == 0) {
             showToast(GithubClientApplication.getContext().getString(R.string.no_public_repositories_message));
         }
         runOnUiThread(() -> githubAdapter.updateDataNodeArrayList(repositories));
@@ -63,7 +63,7 @@ public class GithubClientActivity extends AppCompatActivity implements GithubRep
         showToast(message);
     }
 
-    void showToast(String text){
+    void showToast(String text) {
         Toast.makeText(GithubClientApplication.getContext(), text, Toast.LENGTH_SHORT).show();
 
     }
