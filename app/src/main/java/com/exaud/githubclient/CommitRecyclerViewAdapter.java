@@ -9,8 +9,14 @@ import android.widget.TextView;
 
 import com.exaud.githubclient.models.Commit;
 
+import java.util.ArrayList;
+
 public class CommitRecyclerViewAdapter extends RecyclerView.Adapter<CommitRecyclerViewAdapter.CommitRecyclerViewHolder> {
-    private Commit[] commits;
+    private ArrayList<Commit> commits;
+
+    public CommitRecyclerViewAdapter() {
+        this.commits = new ArrayList<>();
+    }
 
     @NonNull
     @Override
@@ -21,12 +27,17 @@ public class CommitRecyclerViewAdapter extends RecyclerView.Adapter<CommitRecycl
 
     @Override
     public void onBindViewHolder(@NonNull CommitRecyclerViewAdapter.CommitRecyclerViewHolder commitRecyclerViewHolder, int position) {
-        //CommitRecyclerViewHolder.onBind(commitRecyclerViewHolder);
+        commitRecyclerViewHolder.onBind(commits.get(position));
     }
 
     @Override
     public int getItemCount() {
-        return commits.length;
+        return commits.size();
+    }
+
+    void updateCommitArray(ArrayList<Commit> commits){
+        this.commits = commits;
+        notifyDataSetChanged();
     }
 
     public static class CommitRecyclerViewHolder extends RecyclerView.ViewHolder {

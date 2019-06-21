@@ -48,6 +48,8 @@ public class GithubClientActivity extends AppCompatActivity implements GithubRep
 
             GithubRepository.getInstance().loadDataNodes(GithubClientActivity.this, searchString);
         });
+
+        GithubRepository.getInstance().loadDataNodes(GithubClientActivity.this, searchTextView.getText().toString());
     }
 
     @Override

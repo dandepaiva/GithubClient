@@ -24,6 +24,28 @@ public class Commit extends BaseModel implements Parcelable {
     @Expose
     private Integer commentCount;
 
+    protected Commit(Parcel in) {
+        message = in.readString();
+        url = in.readString();
+        if (in.readByte() == 0) {
+            commentCount = null;
+        } else {
+            commentCount = in.readInt();
+        }
+    }
+
+    public static final Creator<Commit> CREATOR = new Creator<Commit>() {
+        @Override
+        public Commit createFromParcel(Parcel in) {
+            return new Commit(in);
+        }
+
+        @Override
+        public Commit[] newArray(int size) {
+            return new Commit[size];
+        }
+    };
+
     public Author getAuthor() {
         return author;
     }
@@ -72,7 +94,14 @@ public class Commit extends BaseModel implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-
+        dest.writeString(message);
+        dest.writeString(url);
+        if (commentCount == null) {
+            dest.writeByte((byte) 0);
+        } else {
+            dest.writeByte((byte) 1);
+            dest.writeInt(commentCount);
+        }
     }
 }
 

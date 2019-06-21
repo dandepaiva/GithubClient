@@ -11,6 +11,7 @@ import com.exaud.githubclient.models.Commit;
 import com.exaud.githubclient.models.Repository;
 import com.google.gson.Gson;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.Executor;
@@ -72,9 +73,13 @@ public class GithubRepository {
                         Gson gson = new Gson();
 
                         Commit[] commits = gson.fromJson(response, Commit[].class);
+                        ArrayList<Commit> commitList = new ArrayList<>();
+                        for (Commit commit : commits) {
+                            commitList.add(commit);
+                        }
 
                         Intent commitListActivity = new Intent(GithubClientApplication.getContext(), CommitListActivity.class);
-                        commitListActivity.putExtra(GithubClientActivity.COMMITLIST, commits);
+                        commitListActivity.putParcelableArrayListExtra(GithubClientActivity.COMMITLIST, commitList);
                         GithubClientApplication.getContext().startActivity(commitListActivity);
                     },
                     error -> {

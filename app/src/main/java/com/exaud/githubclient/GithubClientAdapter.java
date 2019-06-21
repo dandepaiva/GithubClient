@@ -65,7 +65,10 @@ public class GithubClientAdapter extends RecyclerView.Adapter<GithubClientAdapte
             descriptionView.setText(repository.getDescription());
 
             layoutClick.setOnClickListener(v -> {
-                GithubRepository.getInstance().loadCommits(repository);
+                Intent commitListActivity = new Intent(GithubClientApplication.getContext(), CommitListActivity.class);
+                // commitListActivity.putParcelableArrayListExtra(GithubClientActivity.COMMITLIST, commitList);
+                GithubClientApplication.getContext().startActivity(commitListActivity);
+                // GithubRepository.getInstance().loadCommits(repository);
             });
         }
     }
