@@ -5,7 +5,7 @@ import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.exaud.githubclient.models.Commit;
-import com.exaud.githubclient.models.Example;
+import com.exaud.githubclient.models.CommitParent;
 import com.exaud.githubclient.models.Repository;
 import com.google.gson.Gson;
 
@@ -17,9 +17,10 @@ import java.util.concurrent.Executors;
 
 
 public class GithubRepository {
-    private static final String TAG = "REPOSITORY";
     Executor executor = Executors.newFixedThreadPool(3);
+    RepositoryCallback callback;
     String user;
+    int currentPage = 1;
     //private Set<RepositoryCallback> callbacks = new HashSet<>();
 
     private GithubRepository() {
@@ -30,16 +31,14 @@ public class GithubRepository {
     }
 
     void loadDataNodes(RepositoryCallback callback, String user) {
-        //addToSet(callback);
-
         RequestQueue queue = Volley.newRequestQueue(GithubClientApplication.getContext());
-        String url = "https://api.github.com/users/%1$s/repos";
+        String url = "https://api.github.com/users/%1$s/repos?page=%2$d";
+        this.callback = callback;
         this.user = user;
 
         Runnable runnable = () -> {
-            StringRequest stringRequest = new StringRequest(Request.Method.GET, String.format(url, user),
+            StringRequest stringRequest = new StringRequest(Request.Method.GET, String.format(url, user, currentPage),
                     response -> {
-                        // Type repositoryType = new TypeToken<ArrayList<Repository>>(){}.getType();
                         Gson gson = new Gson();
 
                         Repository[] repositories = gson.fromJson(response, Repository[].class);
@@ -61,17 +60,15 @@ public class GithubRepository {
 
     void loadCommits(String url, CommitCallback commitCallback) {
         RequestQueue queue = Volley.newRequestQueue(GithubClientApplication.getContext());
-        //String url = "https://api.github.com/repos/%1$s/%2$s/commits";
-
         Runnable runnable = () -> {
             StringRequest stringRequest = new StringRequest(Request.Method.GET, url+"/commits",
                     response -> {
                         Gson gson = new Gson();
 
-                        Example[] commits = gson.fromJson(response, Example[].class);
+                        CommitParent[] commits = gson.fromJson(response, CommitParent[].class);
 
                         ArrayList<Commit> commitList = new ArrayList<>();
-                        for (Example commit : commits) {
+                        for (CommitParent commit : commits) {
                             commitList.add(commit.getCommit());
                         }
                         commitCallback.showCommit(commitList);
@@ -86,7 +83,22 @@ public class GithubRepository {
             queue.add(stringRequest);
         };
         executor.execute(runnable);
+
+
     }
+
+    void nextPage(){
+        currentPage++;
+        loadDataNodes(callback, user);
+    }
+
+    void previousPage(){
+        if(currentPage > 1) {
+            currentPage--;
+            loadDataNodes(callback, user);
+        }
+    }
+
 
     public interface RepositoryCallback {
         void showDataNodes(List<Repository> repositories);

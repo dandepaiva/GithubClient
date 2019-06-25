@@ -29,9 +29,11 @@ public class GithubClientActivity extends AppCompatActivity implements GithubRep
         context = this;
 
         Button showButton = findViewById(R.id.button_show);
+        Button nextButton = findViewById(R.id.next);
+        Button previousButton = findViewById(R.id.previous);
+
 
         TextView searchTextView = findViewById(R.id.search_text);
-        CheckBox userCheckBox = findViewById(R.id.user_check_box);
         RecyclerView recyclerView = findViewById(R.id.repository_recycler_view);
 
         recyclerView.setHasFixedSize(true);
@@ -45,13 +47,17 @@ public class GithubClientActivity extends AppCompatActivity implements GithubRep
         showButton.setOnClickListener(v -> {
 
             String searchString = searchTextView.getText().toString();
-            // if the client want to search for a user
-            if (userCheckBox.isChecked()) {
-                showToast("CHECKBOX TRUE");
-            }
 
             GithubRepository.getInstance().loadDataNodes(GithubClientActivity.this, searchString);
         });
+
+        nextButton.setOnClickListener(v ->
+            GithubRepository.getInstance().nextPage()
+        );
+
+        previousButton.setOnClickListener(v ->
+                GithubRepository.getInstance().previousPage()
+        );
 
         GithubRepository.getInstance().loadDataNodes(GithubClientActivity.this, searchTextView.getText().toString());
     }

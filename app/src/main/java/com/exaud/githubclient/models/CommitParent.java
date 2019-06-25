@@ -3,7 +3,7 @@ package com.exaud.githubclient.models;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-public class Example {
+public class CommitParent {
 
     @SerializedName("sha")
     @Expose

@@ -3,6 +3,8 @@ package com.exaud.githubclient;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.widget.TextView;
 
@@ -12,7 +14,7 @@ import java.util.ArrayList;
 
 
 public class CommitListActivity extends AppCompatActivity implements GithubRepository.CommitCallback {
-
+    CommitRecyclerViewAdapter commitRecyclerViewAdapter;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -28,13 +30,16 @@ public class CommitListActivity extends AppCompatActivity implements GithubRepos
 
     @Override
     public void showCommit(ArrayList<Commit> commitList) {
-        TextView nameTextView = findViewById(R.id.name_view);
-        TextView messageTextView = findViewById(R.id.message_view);
-        TextView urlTextView = findViewById(R.id.url_view);
+        RecyclerView recyclerView = findViewById(R.id.commit_recycler_view);
+        recyclerView.setHasFixedSize(true);
 
-        Commit commit = commitList.get(1);
-        //nameTextView.setText(commit.getAuthor().getName());
-        messageTextView.setText(commit.getMessage());
-        urlTextView.setText(commit.getUrl());
+        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this);
+        recyclerView.setLayoutManager(layoutManager);
+
+        commitRecyclerViewAdapter = new CommitRecyclerViewAdapter();
+        recyclerView.setAdapter(commitRecyclerViewAdapter);
+
+        commitRecyclerViewAdapter.updateCommitArray(commitList);
+
     }
 }
