@@ -48,7 +48,7 @@ public class GithubClientActivity extends AppCompatActivity implements GithubRep
 
             String searchString = searchTextView.getText().toString();
 
-            GithubRepository.getInstance().loadDataNodes(GithubClientActivity.this, searchString);
+            GithubRepository.getInstance().loadDataNodes(GithubClientActivity.this, 1, searchString);
         });
 
         nextButton.setOnClickListener(v ->
@@ -59,7 +59,7 @@ public class GithubClientActivity extends AppCompatActivity implements GithubRep
                 GithubRepository.getInstance().previousPage()
         );
 
-        GithubRepository.getInstance().loadDataNodes(GithubClientActivity.this, searchTextView.getText().toString());
+        GithubRepository.getInstance().loadDataNodes(GithubClientActivity.this, 1, searchTextView.getText().toString());
     }
 
     @Override

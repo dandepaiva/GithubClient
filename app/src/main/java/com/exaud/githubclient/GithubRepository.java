@@ -1,5 +1,7 @@
 package com.exaud.githubclient;
 
+import android.util.Log;
+
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.StringRequest;
@@ -30,9 +32,10 @@ public class GithubRepository {
         return Singleton.INSTANCE;
     }
 
-    void loadDataNodes(RepositoryCallback callback, String user) {
+    void loadDataNodes(RepositoryCallback callback, int currentPage, String user) {
         RequestQueue queue = Volley.newRequestQueue(GithubClientApplication.getContext());
         String url = "https://api.github.com/users/%1$s/repos?page=%2$d";
+        this.currentPage = currentPage;
         this.callback = callback;
         this.user = user;
 
@@ -42,10 +45,17 @@ public class GithubRepository {
                         Gson gson = new Gson();
 
                         Repository[] repositories = gson.fromJson(response, Repository[].class);
+                        if(this.currentPage>1 && repositories.length==0){
+                            this.currentPage--;
+                            callback.onError("No more pages!");
+                            return;
+                        }
                         callback.showDataNodes(Arrays.asList(repositories));
                     },
                     error -> {
                         String errorFormat = error.getLocalizedMessage();
+
+
                         if (errorFormat == null) {
                             errorFormat = user + " might not exist.";
                         }
@@ -89,13 +99,13 @@ public class GithubRepository {
 
     void nextPage(){
         currentPage++;
-        loadDataNodes(callback, user);
+        loadDataNodes(callback, currentPage, user);
     }
 
     void previousPage(){
-        if(currentPage > 1) {
+        if(currentPage>1) {
             currentPage--;
-            loadDataNodes(callback, user);
+            loadDataNodes(callback, currentPage, user);
         }
     }
 
