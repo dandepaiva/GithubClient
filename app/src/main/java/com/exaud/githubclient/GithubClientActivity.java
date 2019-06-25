@@ -1,5 +1,7 @@
 package com.exaud.githubclient;
 
+import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -18,11 +20,13 @@ import java.util.List;
 public class GithubClientActivity extends AppCompatActivity implements GithubRepository.RepositoryCallback {
     public final static String COMMITLIST = "com.exauc.githubclient.COMMITLIST";
     private GithubClientAdapter githubAdapter;
+    private static Context context;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        context = this;
 
         Button showButton = findViewById(R.id.button_show);
 
@@ -68,5 +72,15 @@ public class GithubClientActivity extends AppCompatActivity implements GithubRep
     void showToast(String text) {
         Toast.makeText(GithubClientApplication.getContext(), text, Toast.LENGTH_SHORT).show();
 
+    }
+
+    /*public static Context getContext(){
+        return context;
+    }*/
+
+    static void startCommitListActivity(String url){
+        Intent commitListActivity = new Intent(context, CommitListActivity.class);
+        commitListActivity.putExtra(COMMITLIST, url);
+        context.startActivity(commitListActivity);
     }
 }

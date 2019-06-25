@@ -1,13 +1,11 @@
 package com.exaud.githubclient;
 
-import android.content.Intent;
-import android.util.Log;
-
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.exaud.githubclient.models.Commit;
+import com.exaud.githubclient.models.Example;
 import com.exaud.githubclient.models.Repository;
 import com.google.gson.Gson;
 
@@ -16,8 +14,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
-
-import static android.support.v4.content.ContextCompat.startActivity;
 
 
 public class GithubRepository {
@@ -63,24 +59,22 @@ public class GithubRepository {
     }
 
 
-    void loadCommits(Repository repository) {
+    void loadCommits(String url, CommitCallback commitCallback) {
         RequestQueue queue = Volley.newRequestQueue(GithubClientApplication.getContext());
-        String url = "https://api.github.com/repos/%1$s/%2$s/commits";
+        //String url = "https://api.github.com/repos/%1$s/%2$s/commits";
 
         Runnable runnable = () -> {
-            StringRequest stringRequest = new StringRequest(Request.Method.GET, String.format(url, user, repository.getName()),
+            StringRequest stringRequest = new StringRequest(Request.Method.GET, url+"/commits",
                     response -> {
                         Gson gson = new Gson();
 
-                        Commit[] commits = gson.fromJson(response, Commit[].class);
-                        ArrayList<Commit> commitList = new ArrayList<>();
-                        for (Commit commit : commits) {
-                            commitList.add(commit);
-                        }
+                        Example[] commits = gson.fromJson(response, Example[].class);
 
-                        Intent commitListActivity = new Intent(GithubClientApplication.getContext(), CommitListActivity.class);
-                        commitListActivity.putParcelableArrayListExtra(GithubClientActivity.COMMITLIST, commitList);
-                        GithubClientApplication.getContext().startActivity(commitListActivity);
+                        ArrayList<Commit> commitList = new ArrayList<>();
+                        for (Example commit : commits) {
+                            commitList.add(commit.getCommit());
+                        }
+                        commitCallback.showCommit(commitList);
                     },
                     error -> {
                         String errorFormat = error.getLocalizedMessage();
@@ -97,6 +91,10 @@ public class GithubRepository {
     public interface RepositoryCallback {
         void showDataNodes(List<Repository> repositories);
         void onError(String message);
+    }
+
+    public interface CommitCallback{
+        void showCommit(ArrayList<Commit> commitList);
     }
 
     private static class Singleton {

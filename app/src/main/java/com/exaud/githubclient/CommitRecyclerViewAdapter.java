@@ -42,17 +42,17 @@ public class CommitRecyclerViewAdapter extends RecyclerView.Adapter<CommitRecycl
 
     public static class CommitRecyclerViewHolder extends RecyclerView.ViewHolder {
         TextView nameView;
-        TextView descriptionView;
+        TextView messageView;
 
         public CommitRecyclerViewHolder(@NonNull View itemView) {
             super(itemView);
             nameView = itemView.findViewById(R.id.name_view);
-            descriptionView = itemView.findViewById(R.id.description_view);
+            messageView = itemView.findViewById(R.id.message_view);
         }
 
         void onBind(Commit commit){
             nameView.setText(commit.getAuthor().getName());
-            descriptionView.setText(commit.describeContents());
+            messageView.setText(commit.getMessage());
         }
     }
 }

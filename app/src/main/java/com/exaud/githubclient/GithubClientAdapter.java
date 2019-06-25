@@ -1,10 +1,7 @@
 package com.exaud.githubclient;
 
-import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
-import android.text.Layout;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -43,12 +40,12 @@ public class GithubClientAdapter extends RecyclerView.Adapter<GithubClientAdapte
         }
     }
 
-    void updateDataNodeArrayList(List<Repository> repositoryList){
+    void updateDataNodeArrayList(List<Repository> repositoryList) {
         this.repositoryList = repositoryList;
         notifyDataSetChanged();
     }
 
-    public static class GithubClientViewHolder extends RecyclerView.ViewHolder{
+    public static class GithubClientViewHolder extends RecyclerView.ViewHolder {
         TextView nameView;
         TextView descriptionView;
         View layoutClick;
@@ -56,19 +53,16 @@ public class GithubClientAdapter extends RecyclerView.Adapter<GithubClientAdapte
         public GithubClientViewHolder(@NonNull View itemView) {
             super(itemView);
             nameView = itemView.findViewById(R.id.name_view);
-            descriptionView = itemView.findViewById(R.id.description_view);
+            descriptionView = itemView.findViewById(R.id.message_view);
             layoutClick = itemView.findViewById(R.id.click_layout);
         }
 
-        void onBind(Repository repository){
+        void onBind(Repository repository) {
             nameView.setText(repository.getName());
             descriptionView.setText(repository.getDescription());
 
             layoutClick.setOnClickListener(v -> {
-                Intent commitListActivity = new Intent(GithubClientApplication.getContext(), CommitListActivity.class);
-                // commitListActivity.putParcelableArrayListExtra(GithubClientActivity.COMMITLIST, commitList);
-                GithubClientApplication.getContext().startActivity(commitListActivity);
-                // GithubRepository.getInstance().loadCommits(repository);
+                GithubClientActivity.startCommitListActivity(repository.getUrl());
             });
         }
     }

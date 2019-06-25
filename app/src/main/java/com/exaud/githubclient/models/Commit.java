@@ -7,7 +7,7 @@ import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
 
-public class Commit extends BaseModel implements Parcelable {
+public class Commit extends BaseModel {
     @SerializedName("author")
     @Expose
     private Author author;
@@ -34,17 +34,6 @@ public class Commit extends BaseModel implements Parcelable {
         }
     }
 
-    public static final Creator<Commit> CREATOR = new Creator<Commit>() {
-        @Override
-        public Commit createFromParcel(Parcel in) {
-            return new Commit(in);
-        }
-
-        @Override
-        public Commit[] newArray(int size) {
-            return new Commit[size];
-        }
-    };
 
     public Author getAuthor() {
         return author;
@@ -84,24 +73,6 @@ public class Commit extends BaseModel implements Parcelable {
 
     public void setCommentCount(Integer commentCount) {
         this.commentCount = commentCount;
-    }
-
-
-    @Override
-    public int describeContents() {
-        return 0;
-    }
-
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeString(message);
-        dest.writeString(url);
-        if (commentCount == null) {
-            dest.writeByte((byte) 0);
-        } else {
-            dest.writeByte((byte) 1);
-            dest.writeInt(commentCount);
-        }
     }
 }
 

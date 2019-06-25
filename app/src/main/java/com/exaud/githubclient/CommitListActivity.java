@@ -2,42 +2,39 @@ package com.exaud.githubclient;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.PersistableBundle;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.widget.TextView;
 
 import com.exaud.githubclient.models.Commit;
 
 import java.util.ArrayList;
 
 
-public class CommitListActivity extends AppCompatActivity{
-    private CommitRecyclerViewAdapter commitRecyclerViewAdapter;
+public class CommitListActivity extends AppCompatActivity implements GithubRepository.CommitCallback {
+
     @Override
-    public void onCreate(Bundle savedInstanceState, PersistableBundle persistentState) {
-        super.onCreate(savedInstanceState, persistentState);
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
         setContentView(R.layout.commit_list_activity);
 
-        Intent intent = getIntent();
-        ArrayList<Commit> commits = intent.getParcelableArrayListExtra(GithubClientActivity.COMMITLIST);
         Log.e("COMMIT", "onCreate: BEFORE COMMITS");
 
-        for (Commit commit : commits) {
-            Log.e("COMMIT", "onCreate: COMMITS: " + commit.getAuthor().getName());
-        }
+        Intent intent = getIntent();
+        String url = intent.getStringExtra(GithubClientActivity.COMMITLIST);
 
-        RecyclerView commitsRecyclerView = findViewById(R.id.commit_recycler_view);
+        GithubRepository.getInstance().loadCommits(url, this);
+    }
 
-        commitsRecyclerView.setHasFixedSize(true);
+    @Override
+    public void showCommit(ArrayList<Commit> commitList) {
+        TextView nameTextView = findViewById(R.id.name_view);
+        TextView messageTextView = findViewById(R.id.message_view);
+        TextView urlTextView = findViewById(R.id.url_view);
 
-        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this);
-        commitsRecyclerView.setLayoutManager(layoutManager);
-        commitRecyclerViewAdapter = new CommitRecyclerViewAdapter();
-        commitsRecyclerView.setAdapter(commitRecyclerViewAdapter);
-
-        commitRecyclerViewAdapter.updateCommitArray(commits);
-
+        Commit commit = commitList.get(1);
+        //nameTextView.setText(commit.getAuthor().getName());
+        messageTextView.setText(commit.getMessage());
+        urlTextView.setText(commit.getUrl());
     }
 }
