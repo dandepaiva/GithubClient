@@ -55,13 +55,9 @@ public class GithubClientActivity extends AppCompatActivity implements GithubRep
             pageNumber.setText(getString(R.string.page_number, 1));
         });
 
-        nextButton.setOnClickListener(v -> {
-            GithubRepository.getInstance().nextPage();
-        });
+        nextButton.setOnClickListener(v -> GithubRepository.getInstance().nextPage());
 
-        previousButton.setOnClickListener(v -> {
-            GithubRepository.getInstance().previousPage();
-        });
+        previousButton.setOnClickListener(v -> GithubRepository.getInstance().previousPage());
     }
 
     @Override

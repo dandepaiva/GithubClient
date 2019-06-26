@@ -23,6 +23,9 @@ public class GithubRepository {
     RepositoryCallback callback;
     String user;
     int currentPage = 1;
+    int currentPageCommits = 1;
+    CommitCallback commitCallback;
+    String url;
     //private Set<RepositoryCallback> callbacks = new HashSet<>();
 
     private GithubRepository() {
@@ -68,14 +71,24 @@ public class GithubRepository {
     }
 
 
-    void loadCommits(String url, CommitCallback commitCallback) {
+    void loadCommits(String url, int currentPageCommits, CommitCallback commitCallback) {
+        this.currentPageCommits = currentPageCommits;
+        this.commitCallback = commitCallback;
+        this.url = url;
+
         RequestQueue queue = Volley.newRequestQueue(GithubClientApplication.getContext());
         Runnable runnable = () -> {
-            StringRequest stringRequest = new StringRequest(Request.Method.GET, url+"/commits",
+            StringRequest stringRequest = new StringRequest(Request.Method.GET, url+"/commits?page="+currentPageCommits,
                     response -> {
                         Gson gson = new Gson();
 
                         CommitParent[] commits = gson.fromJson(response, CommitParent[].class);
+
+                        if(this.currentPageCommits>1 && commits.length==0){
+                            this.currentPageCommits--;
+                            callback.onError("No more pages!");
+                            return;
+                        }
 
                         ArrayList<Commit> commitList = new ArrayList<>();
                         for (CommitParent commit : commits) {
@@ -106,6 +119,18 @@ public class GithubRepository {
         if(currentPage>1) {
             currentPage--;
             loadDataNodes(callback, currentPage, user);
+        }
+    }
+
+    void nextPageCommits(){
+        currentPageCommits++;
+        loadCommits(url, currentPageCommits, commitCallback);
+    }
+
+    void previousPageCommits(){
+        if(currentPageCommits>1) {
+            currentPageCommits--;
+            loadCommits(url, currentPageCommits, commitCallback);
         }
     }
 
