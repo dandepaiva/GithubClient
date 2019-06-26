@@ -2,7 +2,6 @@ package com.exaud.githubclient;
 
 import android.content.Context;
 import android.content.Intent;
-import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -15,20 +14,18 @@ import com.exaud.githubclient.models.Repository;
 
 import java.util.List;
 
-public class GithubClientActivity extends AppCompatActivity implements GithubRepository.RepositoryCallback {
+public class GithubClientActivity extends AppCompatActivity {
     public final static String COMMITLIST = "com.exauc.githubclient.COMMITLIST";
     private GithubClientAdapter githubAdapter;
     private static Context context;
-    TextView pageNumber;
+    private TextView pageNumber;
+    private int pageCount;
+    private String user;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-        if (savedInstanceState != null) {
-            return;
-        }
 
         context = this;
         Button showButton = findViewById(R.id.button_show);
@@ -50,30 +47,83 @@ public class GithubClientActivity extends AppCompatActivity implements GithubRep
         showButton.setOnClickListener(v -> {
 
             String searchString = searchTextView.getText().toString();
+            user = searchString;
+            pageCount = 1;
 
-            GithubRepository.getInstance().loadDataNodes(GithubClientActivity.this, 1, searchString);
+            GithubRepository.getInstance().loadDataNodes(pageCount, user, new GithubRepository.RepositoryCallback() {
+                @Override
+                public void showDataNodes(List<Repository> repositories) {
+                    if (repositories.size() != 0) {
+                        runOnUiThread(() -> {
+                            githubAdapter.updateDataNodeArrayList(repositories);
+                            pageNumber.setText(getString(R.string.page_number, GithubRepository.getInstance().currentPage));
+                        });
+                    } else {
+                        showToast(GithubClientApplication.getContext().getString(R.string.no_public_repositories_message));
+                    }
+                }
+
+                @Override
+                public void onError(String message) {
+                    showToast(message);
+                }
+            });
             pageNumber.setText(getString(R.string.page_number, 1));
         });
 
-        nextButton.setOnClickListener(v -> GithubRepository.getInstance().nextPage());
+        nextButton.setOnClickListener(v -> {
+            nextButton.setEnabled(false);
+            GithubRepository.getInstance().loadDataNodes(pageCount + 1, user, new GithubRepository.RepositoryCallback() {
+                @Override
+                public void showDataNodes(List<Repository> repositories) {
+                    if (repositories.size() != 0) {
+                        runOnUiThread(() -> {
+                            nextButton.setEnabled(githubAdapter.updateDataNodeArrayList(repositories));
+                            pageCount++;
+                            pageNumber.setText(getString(R.string.page_number, pageCount));
 
-        previousButton.setOnClickListener(v -> GithubRepository.getInstance().previousPage());
-    }
+                        });
+                    } else {
+                        nextButton.setEnabled(true);
+                        this.onError("");
+                    }
+                }
 
-    @Override
-    public void showDataNodes(List<Repository> repositories) {
-        if (repositories.size() == 0) {
-            showToast(GithubClientApplication.getContext().getString(R.string.no_public_repositories_message));
-        }
-        runOnUiThread(() ->{
-            githubAdapter.updateDataNodeArrayList(repositories);
-            pageNumber.setText(getString(R.string.page_number, GithubRepository.getInstance().currentPage));
+                @Override
+                public void onError(String message) {
+                    showToast("No more pages for " + user + "!");
+                }
+            });
+
         });
-    }
 
-    @Override
-    public void onError(String message) {
-        showToast(message);
+
+        previousButton.setOnClickListener(v -> {
+
+            if(pageCount<=0) {
+                pageCount = 1;
+                return;
+            }
+
+            GithubRepository.getInstance().loadDataNodes(pageCount - 1, user, new GithubRepository.RepositoryCallback() {
+                @Override
+                public void showDataNodes(List<Repository> repositories) {
+                    if (repositories.size() != 0) {
+                        runOnUiThread(() -> {
+                            githubAdapter.updateDataNodeArrayList(repositories);
+                            pageCount--;
+                            pageNumber.setText(getString(R.string.page_number, pageCount));
+                        });
+                    }
+                }
+
+                @Override
+                public void onError(String message) {
+                    showToast(message);
+                    pageNumber.setText(getString(R.string.page_number, 1));
+                }
+            });
+        });
     }
 
 

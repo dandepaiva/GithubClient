@@ -40,9 +40,10 @@ public class GithubClientAdapter extends RecyclerView.Adapter<GithubClientAdapte
         }
     }
 
-    void updateDataNodeArrayList(List<Repository> repositoryList) {
+    boolean updateDataNodeArrayList(List<Repository> repositoryList) {
         this.repositoryList = repositoryList;
         notifyDataSetChanged();
+        return true;
     }
 
     public static class GithubClientViewHolder extends RecyclerView.ViewHolder {

@@ -5,7 +5,6 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.widget.Button;
 import android.widget.TextView;
 
@@ -28,7 +27,7 @@ public class CommitListActivity extends AppCompatActivity implements GithubRepos
         Intent intent = getIntent();
         String url = intent.getStringExtra(GithubClientActivity.COMMITLIST);
 
-        GithubRepository.getInstance().loadCommits(url,1, this);
+        GithubRepository.getInstance().loadCommits(url, 1, this);
 
         nextButton.setOnClickListener(v -> GithubRepository.getInstance().nextPageCommits());
 
@@ -37,7 +36,7 @@ public class CommitListActivity extends AppCompatActivity implements GithubRepos
 
     @Override
     public void showCommit(ArrayList<Commit> commitList) {
-        TextView pageNumber= findViewById(R.id.page_number_commits);
+        TextView pageNumber = findViewById(R.id.page_number_commits);
         RecyclerView recyclerView = findViewById(R.id.commit_recycler_view);
         recyclerView.setHasFixedSize(true);
 
