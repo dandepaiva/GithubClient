@@ -14,6 +14,7 @@
         android:ems="10"
         android:inputType="textPersonName"
         android:text="googlesamples"
+        android:hint="@string/search_hint"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         tools:ignore="HardcodedText" />

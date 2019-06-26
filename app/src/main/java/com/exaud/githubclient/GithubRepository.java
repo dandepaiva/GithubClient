@@ -12,12 +12,13 @@ import com.google.gson.Gson;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
 
-public class GithubRepository {
-    Executor executor = Executors.newFixedThreadPool(3);
+class GithubRepository {
+    private final Executor executor = Executors.newFixedThreadPool(3);
 
     private GithubRepository() {
     }
@@ -32,10 +33,12 @@ public class GithubRepository {
             callback.onError("This is the first page!");
             return;
         }
+
         RequestQueue queue = Volley.newRequestQueue(GithubClientApplication.getContext());
         String url = "https://api.github.com/users/%1$s/repos?page=%2$d";
         Runnable runnable = () -> {
-            StringRequest stringRequest = new StringRequest(Request.Method.GET, String.format(url, user, currentPage),
+            String urlFormat = String.format(Locale.CANADA, url, user, currentPage);
+            StringRequest stringRequest = new StringRequest(Request.Method.GET, urlFormat,
                     response -> {
                         Gson gson = new Gson();
 
@@ -77,6 +80,7 @@ public class GithubRepository {
                         for (CommitParent commit : commits) {
                             commitList.add(commit.getCommit());
                         }
+
                         commitCallback.showCommit(commitList);
                     },
                     error -> {

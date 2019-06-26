@@ -35,6 +35,7 @@ public class CommitRecyclerViewAdapter extends RecyclerView.Adapter<CommitRecycl
         return commits.size();
     }
 
+    @SuppressWarnings("SameReturnValue")
     boolean updateCommitArray(ArrayList<Commit> commits){
         this.commits = commits;
         notifyDataSetChanged();
@@ -42,10 +43,10 @@ public class CommitRecyclerViewAdapter extends RecyclerView.Adapter<CommitRecycl
     }
 
     public static class CommitRecyclerViewHolder extends RecyclerView.ViewHolder {
-        TextView nameView;
-        TextView messageView;
+        final TextView nameView;
+        final TextView messageView;
 
-        public CommitRecyclerViewHolder(@NonNull View itemView) {
+        CommitRecyclerViewHolder(@NonNull View itemView) {
             super(itemView);
             nameView = itemView.findViewById(R.id.name_view);
             messageView = itemView.findViewById(R.id.message_view);

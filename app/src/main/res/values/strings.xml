@@ -1,10 +1,9 @@
 <resources>
     <string name="app_name">Github Client</string>
-    <string name="github_username">Github Username</string>
     <string name="find">Find</string>
     <string name="no_public_repositories_message">This user has no public repositories.</string>
-    <string name="checkbox_user">are you looking for a user?</string>
     <string name="next">next</string>
     <string name="previous">previous</string>
     <string name="page_number">"%1$d" </string>
+    <string name="search_hint">Github Username</string>
 </resources>

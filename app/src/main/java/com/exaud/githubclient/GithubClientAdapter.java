@@ -40,6 +40,7 @@ public class GithubClientAdapter extends RecyclerView.Adapter<GithubClientAdapte
         }
     }
 
+    @SuppressWarnings("SameReturnValue")
     boolean updateDataNodeArrayList(List<Repository> repositoryList) {
         this.repositoryList = repositoryList;
         notifyDataSetChanged();
@@ -47,11 +48,11 @@ public class GithubClientAdapter extends RecyclerView.Adapter<GithubClientAdapte
     }
 
     public static class GithubClientViewHolder extends RecyclerView.ViewHolder {
-        TextView nameView;
-        TextView descriptionView;
-        View layoutClick;
+        final TextView nameView;
+        final TextView descriptionView;
+        final View layoutClick;
 
-        public GithubClientViewHolder(@NonNull View itemView) {
+        GithubClientViewHolder(@NonNull View itemView) {
             super(itemView);
             nameView = itemView.findViewById(R.id.name_view);
             descriptionView = itemView.findViewById(R.id.message_view);
@@ -62,9 +63,8 @@ public class GithubClientAdapter extends RecyclerView.Adapter<GithubClientAdapte
             nameView.setText(repository.getName());
             descriptionView.setText(repository.getDescription());
 
-            layoutClick.setOnClickListener(v -> {
-                GithubClientActivity.startCommitListActivity(repository.getUrl());
-            });
+            layoutClick.setOnClickListener(v ->
+                    GithubClientActivity.startCommitListActivity(repository.getUrl()));
         }
     }
 }

@@ -1,11 +1,9 @@
 package com.exaud.githubclient.models;
 
-import com.google.gson.annotations.SerializedName;
-
 public class Repository extends BaseModel {
-    private String name;
-    private String description;
-    private String url;
+    private final String name;
+    private final String description;
+    private final String url;
 
 
     public Repository(String name, String description, String url) {

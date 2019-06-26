@@ -15,7 +15,7 @@ import java.util.ArrayList;
 
 
 public class CommitListActivity extends AppCompatActivity {
-    CommitRecyclerViewAdapter commitRecyclerViewAdapter;
+    private CommitRecyclerViewAdapter commitRecyclerViewAdapter;
     private int pageCount;
     private String urlPersistent;
 
@@ -103,7 +103,7 @@ public class CommitListActivity extends AppCompatActivity {
         });
     }
 
-    void showToast(String message) {
+    private void showToast(String message) {
         Toast.makeText(GithubClientApplication.getContext(), message, Toast.LENGTH_SHORT).show();
 
     }

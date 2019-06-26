@@ -15,7 +15,7 @@ import com.exaud.githubclient.models.Repository;
 import java.util.List;
 
 public class GithubClientActivity extends AppCompatActivity {
-    public final static String COMMITLIST = "com.exauc.githubclient.COMMITLIST";
+    public final static String COMMITLIST = "com.exaud.githubclient.commitList";
     private GithubClientAdapter githubAdapter;
     private static Context context;
     private TextView pageNumber;
@@ -46,8 +46,7 @@ public class GithubClientActivity extends AppCompatActivity {
 
         showButton.setOnClickListener(v -> {
 
-            String searchString = searchTextView.getText().toString();
-            user = searchString;
+            user = searchTextView.getText().toString();
             pageCount = 1;
 
             GithubRepository.getInstance().loadDataNodes(pageCount, user, new GithubRepository.RepositoryCallback() {
@@ -133,7 +132,7 @@ public class GithubClientActivity extends AppCompatActivity {
         super.onSaveInstanceState(outState);
     }
 
-    void showToast(String text) {
+    private void showToast(String text) {
         Toast.makeText(GithubClientApplication.getContext(), text, Toast.LENGTH_SHORT).show();
     }
 
