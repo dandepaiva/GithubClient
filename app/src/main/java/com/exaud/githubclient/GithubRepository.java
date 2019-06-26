@@ -67,9 +67,11 @@ public class GithubRepository {
 
 
     void loadCommits(String url, int currentPageCommits, CommitCallback commitCallback) {
-        this.currentPageCommits = currentPageCommits;
-        this.commitCallback = commitCallback;
-        this.url = url;
+
+        if (currentPageCommits <= 0) {
+            commitCallback.onError("This is the first page!");
+            return;
+        }
 
         RequestQueue queue = Volley.newRequestQueue(GithubClientApplication.getContext());
         Runnable runnable = () -> {
@@ -78,13 +80,6 @@ public class GithubRepository {
                         Gson gson = new Gson();
 
                         CommitParent[] commits = gson.fromJson(response, CommitParent[].class);
-
-                        if (this.currentPageCommits > 1 && commits.length == 0) {
-                            this.currentPageCommits--;
-                            callback.onError("No more pages!");
-                            return;
-                        }
-
                         ArrayList<Commit> commitList = new ArrayList<>();
                         for (CommitParent commit : commits) {
                             commitList.add(commit.getCommit());
@@ -96,7 +91,7 @@ public class GithubRepository {
                         if (errorFormat == null) {
                             errorFormat = user + " might not exist.";
                         }
-                        //commitCallback.onError(errorFormat);
+                        commitCallback.onError(errorFormat);
                     }
             );
             queue.add(stringRequest);
@@ -106,18 +101,6 @@ public class GithubRepository {
 
     }
 
-    void nextPageCommits() {
-        currentPageCommits++;
-        loadCommits(url, currentPageCommits, commitCallback);
-    }
-
-    void previousPageCommits() {
-        if (currentPageCommits > 1) {
-            currentPageCommits--;
-            loadCommits(url, currentPageCommits, commitCallback);
-        }
-    }
-
     public interface RepositoryCallback {
         void showDataNodes(List<Repository> repositories);
         void onError(String message);
@@ -125,7 +108,7 @@ public class GithubRepository {
 
     public interface CommitCallback {
         void showCommit(ArrayList<Commit> commitList);
-        //void onError(String message);
+        void onError(String message);
     }
 
     private static class Singleton {

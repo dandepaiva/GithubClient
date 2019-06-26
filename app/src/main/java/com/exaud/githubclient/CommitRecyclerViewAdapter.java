@@ -35,9 +35,10 @@ public class CommitRecyclerViewAdapter extends RecyclerView.Adapter<CommitRecycl
         return commits.size();
     }
 
-    void updateCommitArray(ArrayList<Commit> commits){
+    boolean updateCommitArray(ArrayList<Commit> commits){
         this.commits = commits;
         notifyDataSetChanged();
+        return true;
     }
 
     public static class CommitRecyclerViewHolder extends RecyclerView.ViewHolder {

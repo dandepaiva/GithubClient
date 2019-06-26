@@ -85,13 +85,13 @@ public class GithubClientActivity extends AppCompatActivity {
                         });
                     } else {
                         nextButton.setEnabled(true);
-                        this.onError("");
+                        this.onError("No more pages for " + user + "!");
                     }
                 }
 
                 @Override
                 public void onError(String message) {
-                    showToast("No more pages for " + user + "!");
+                    showToast(message);
                 }
             });
 
@@ -135,7 +135,6 @@ public class GithubClientActivity extends AppCompatActivity {
 
     void showToast(String text) {
         Toast.makeText(GithubClientApplication.getContext(), text, Toast.LENGTH_SHORT).show();
-
     }
 
     static void startCommitListActivity(String url) {
