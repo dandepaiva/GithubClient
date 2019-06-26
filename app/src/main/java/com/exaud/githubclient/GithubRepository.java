@@ -109,7 +109,6 @@ public class GithubRepository {
         }
     }
 
-
     public interface RepositoryCallback {
         void showDataNodes(List<Repository> repositories);
         void onError(String message);
@@ -122,30 +121,4 @@ public class GithubRepository {
     private static class Singleton {
         private static final GithubRepository INSTANCE = new GithubRepository();
     }
-
-    /*private void lsdask(Class baseModelClass) {
-        Runnable runnable = () -> {
-            StringRequest stringRequest = new StringRequest(Request.Method.GET, String.format(url,user),
-                    response -> {
-                        // Type repositoryType = new TypeToken<ArrayList<Repository>>(){}.getType();
-                        Gson gson = new Gson();
-
-                        BaseModel repos = new BaseModel<>(Repository.class);
-                        BaseModel[] baseModels = gson.fromJson(response, BaseModel[].class);
-
-                        volleyCallback.onBaseModelLoaded(baseModels);
-                    },
-                    error -> {
-                        String errorFormat = error.getLocalizedMessage();
-                        if (errorFormat==null) {
-                            errorFormat = user + " might not exist.";
-                        }
-                        callback.onError(errorFormat);
-                    }
-            );
-            queue.add(stringRequest);
-        };
-        executor.execute(runnable);
-    }*/
-
 }
