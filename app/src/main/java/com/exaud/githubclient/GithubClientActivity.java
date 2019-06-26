@@ -56,7 +56,7 @@ public class GithubClientActivity extends AppCompatActivity {
                     if (repositories.size() != 0) {
                         runOnUiThread(() -> {
                             githubAdapter.updateDataNodeArrayList(repositories);
-                            pageNumber.setText(getString(R.string.page_number, GithubRepository.getInstance().currentPage));
+                            pageNumber.setText(getString(R.string.page_number, 1));
                         });
                     } else {
                         showToast(GithubClientApplication.getContext().getString(R.string.no_public_repositories_message));

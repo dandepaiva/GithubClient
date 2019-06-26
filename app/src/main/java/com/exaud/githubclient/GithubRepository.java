@@ -18,13 +18,6 @@ import java.util.concurrent.Executors;
 
 public class GithubRepository {
     Executor executor = Executors.newFixedThreadPool(3);
-    RepositoryCallback callback;
-    String user;
-    CommitCallback commitCallback;
-    String url;
-
-    int currentPage = 1;
-    int currentPageCommits = 1;
 
     private GithubRepository() {
     }
@@ -89,7 +82,7 @@ public class GithubRepository {
                     error -> {
                         String errorFormat = error.getLocalizedMessage();
                         if (errorFormat == null) {
-                            errorFormat = user + " might not exist.";
+                            errorFormat = "No commits found!";
                         }
                         commitCallback.onError(errorFormat);
                     }
