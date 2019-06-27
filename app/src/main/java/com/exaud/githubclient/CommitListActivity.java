@@ -31,7 +31,7 @@ public class CommitListActivity extends AppCompatActivity {
         } else {
             pageCount = 1;
         }
-        //Log.e("POTATOCHIMPS", "onCreate: " + commitsViewModel.getData());
+
         Button previousButton = findViewById(R.id.previous_commits);
         Button nextButton = findViewById(R.id.next_commits);
         TextView pageNumber = findViewById(R.id.page_number_commits);
