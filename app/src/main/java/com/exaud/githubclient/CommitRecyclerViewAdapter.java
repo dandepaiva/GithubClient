@@ -9,7 +9,9 @@ import android.widget.TextView;
 
 import com.exaud.githubclient.models.Commit;
 
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
+import java.util.Locale;
 
 public class CommitRecyclerViewAdapter extends RecyclerView.Adapter<CommitRecyclerViewAdapter.CommitRecyclerViewHolder> {
     private ArrayList<Commit> commits;
@@ -53,7 +55,7 @@ public class CommitRecyclerViewAdapter extends RecyclerView.Adapter<CommitRecycl
         }
 
         void onBind(Commit commit){
-            nameView.setText(commit.getAuthor().getName());
+            nameView.setText(commit.getAuthor().getName().replace("Ã©", "é"));
             messageView.setText(commit.getMessage());
         }
     }
