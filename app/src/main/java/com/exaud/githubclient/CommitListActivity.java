@@ -27,7 +27,7 @@ public class CommitListActivity extends AppCompatActivity {
 
         GithubViewModel commitsViewModel = ViewModelProviders.of(this).get(GithubViewModel.class);
         if (savedInstanceState!=null){
-            pageCount = commitsViewModel.getPage();
+            pageCount = commitsViewModel.getCommitsPage();
         } else {
             pageCount = 1;
         }
@@ -45,7 +45,7 @@ public class CommitListActivity extends AppCompatActivity {
             public void showCommit(ArrayList<Commit> commitList) {
                 urlPersistent = url;
 
-                commitsViewModel.saveData(pageCount);
+                commitsViewModel.setCommitsPage(pageCount);
 
                 TextView pageNumber = findViewById(R.id.page_number_commits);
                 RecyclerView recyclerView = findViewById(R.id.commit_recycler_view);
@@ -77,7 +77,7 @@ public class CommitListActivity extends AppCompatActivity {
                         nextButton.setEnabled(commitRecyclerViewAdapter.updateCommitArray(commitList));
                         pageCount++;
                         pageNumber.setText(getString(R.string.page_number, pageCount));
-                        commitsViewModel.saveData(pageCount);
+                        commitsViewModel.setCommitsPage(pageCount);
                     } else {
                         nextButton.setEnabled(true);
                         onError("This is the last page!");
@@ -104,7 +104,7 @@ public class CommitListActivity extends AppCompatActivity {
                         commitRecyclerViewAdapter.updateCommitArray(commitList);
                         pageCount--;
                         pageNumber.setText(getString(R.string.page_number, pageCount));
-                        commitsViewModel.saveData(pageCount);
+                        commitsViewModel.setCommitsPage(pageCount);
                     }
                 }
 
