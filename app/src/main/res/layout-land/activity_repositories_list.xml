@@ -2,19 +2,19 @@
 <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="360dp"
-    android:layout_height="wrap_content"
-    tools:context=".GithubClientActivity">
+    android:layout_width="match_parent"
+    android:layout_height="360dp"
+    tools:context=".RepositorySearchActivity">
 
 
     <EditText
         android:id="@+id/search_text"
-        android:layout_width="230dp"
+        android:layout_width="430dp"
         android:layout_height="45dp"
         android:ems="10"
+        android:hint="@string/search_hint"
         android:inputType="textPersonName"
         android:text="googlesamples"
-        android:hint="@string/search_hint"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         tools:ignore="HardcodedText" />
@@ -33,19 +33,22 @@
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/repository_recycler_view"
-        android:layout_width="match_parent"
-        android:layout_height="425dp"
-        android:layout_marginTop="0dp"
+        android:layout_width="531dp"
+        android:layout_height="180dp"
+        app:layout_constraintBottom_toTopOf="@+id/paging_layout"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/button_show" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/search_text"/>
 
     <android.support.constraint.ConstraintLayout
+        android:id="@+id/paging_layout"
         android:layout_width="wrap_content"
         android:layout_height="50dp"
+        android:layout_marginBottom="74dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/repository_recycler_view">
+        app:layout_constraintTop_toBottomOf="@+id/repository_recycler_view">
 
         <Button
             android:id="@+id/next"
@@ -62,16 +65,16 @@
             android:id="@+id/page_number"
             android:layout_width="48dp"
             android:layout_height="48dp"
-            android:background="@drawable/page_number_box"
-            android:textColor="@color/black"
-            android:textAlignment="center"
             android:layout_marginTop="2dp"
+            android:background="@drawable/page_number_box"
             android:paddingTop="5dp"
+            android:textAlignment="center"
+            android:textColor="@color/black"
             android:textSize="25sp"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/next"
-            app:layout_constraintStart_toEndOf="@+id/previous" />
+            app:layout_constraintStart_toEndOf="@+id/previous"
+            app:layout_constraintTop_toTopOf="parent" />
 
         <Button
             android:id="@+id/previous"

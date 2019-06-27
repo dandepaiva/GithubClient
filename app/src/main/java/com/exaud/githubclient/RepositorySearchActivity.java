@@ -14,9 +14,9 @@ import com.exaud.githubclient.models.Repository;
 
 import java.util.List;
 
-public class GithubClientActivity extends AppCompatActivity {
+public class RepositorySearchActivity extends AppCompatActivity {
     public final static String COMMITLIST = "com.exaud.githubclient.commitList";
-    private GithubClientAdapter githubAdapter;
+    private RepositoriesListAdapter githubAdapter;
     private TextView pageNumber;
     private int pageCount;
     private static String user="exaud";
@@ -24,7 +24,7 @@ public class GithubClientActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_repositories_list);
 
         GithubViewModel repositoryViewModel = ViewModelProviders.of(this).get(GithubViewModel.class);
 
@@ -41,7 +41,7 @@ public class GithubClientActivity extends AppCompatActivity {
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(layoutManager);
 
-        githubAdapter = new GithubClientAdapter();
+        githubAdapter = new RepositoriesListAdapter();
         recyclerView.setAdapter(githubAdapter);
 
         if (savedInstanceState!=null){

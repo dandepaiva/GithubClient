@@ -37,7 +37,7 @@ public class CommitListActivity extends AppCompatActivity {
         TextView pageNumber = findViewById(R.id.page_number_commits);
 
         Intent intent = getIntent();
-        String url = intent.getStringExtra(GithubClientActivity.COMMITLIST);
+        String url = intent.getStringExtra(RepositorySearchActivity.COMMITLIST);
 
 
         GithubRepository.getInstance().loadCommits(url, pageCount, new GithubRepository.CommitCallback() {

@@ -12,22 +12,22 @@ import com.exaud.githubclient.models.Repository;
 import java.util.ArrayList;
 import java.util.List;
 
-public class GithubClientAdapter extends RecyclerView.Adapter<GithubClientAdapter.GithubClientViewHolder> {
+public class RepositoriesListAdapter extends RecyclerView.Adapter<RepositoriesListAdapter.GithubClientViewHolder> {
     private List<Repository> repositoryList;
 
-    public GithubClientAdapter() {
+    public RepositoriesListAdapter() {
         this.repositoryList = new ArrayList<>();
     }
 
     @NonNull
     @Override
-    public GithubClientAdapter.GithubClientViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
+    public RepositoriesListAdapter.GithubClientViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
         View nodeView = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.githubclient_recycler_view, viewGroup, false);
         return new GithubClientViewHolder(nodeView);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull GithubClientAdapter.GithubClientViewHolder githubClientViewHolder, int position) {
+    public void onBindViewHolder(@NonNull RepositoriesListAdapter.GithubClientViewHolder githubClientViewHolder, int position) {
         githubClientViewHolder.onBind(repositoryList.get(position));
     }
 
@@ -64,7 +64,7 @@ public class GithubClientAdapter extends RecyclerView.Adapter<GithubClientAdapte
             descriptionView.setText(repository.getDescription());
 
             layoutClick.setOnClickListener(v ->
-                    GithubClientActivity.startCommitListActivity(repository.getUrl()));
+                    RepositorySearchActivity.startCommitListActivity(repository.getUrl()));
         }
     }
 }
