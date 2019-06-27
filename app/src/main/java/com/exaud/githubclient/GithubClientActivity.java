@@ -23,9 +23,6 @@ public class GithubClientActivity extends AppCompatActivity {
     private TextView pageNumber;
     private int pageCount;
     private static String user="exaud";
-    static boolean searchWasPressed;
-
-    private Context context;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,7 +31,6 @@ public class GithubClientActivity extends AppCompatActivity {
 
         GithubViewModel repositoryViewModel = ViewModelProviders.of(this).get(GithubViewModel.class);
 
-        context = this;
         Button showButton = findViewById(R.id.button_show);
         Button nextButton = findViewById(R.id.next);
         Button previousButton = findViewById(R.id.previous);
@@ -52,16 +48,16 @@ public class GithubClientActivity extends AppCompatActivity {
         recyclerView.setAdapter(githubAdapter);
 
         if (savedInstanceState!=null){
-            if(searchWasPressed) {
+            if(repositoryViewModel.isPressed()) {
                 pageCount = repositoryViewModel.getPage();
                 findButtonPress(user, repositoryViewModel);
             }
         } else {
-            searchWasPressed = false;
+            repositoryViewModel.setPressed(false);
         }
 
         showButton.setOnClickListener(v -> {
-            searchWasPressed = true;
+            repositoryViewModel.setPressed(true);
             pageCount = 1;
             user = searchTextView.getText().toString();
             findButtonPress(user, repositoryViewModel);
