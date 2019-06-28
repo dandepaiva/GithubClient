@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -25,7 +26,7 @@ public class CommitListActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.commit_list_activity);
 
-        GithubViewModel commitsViewModel = ViewModelProviders.of(this).get(GithubViewModel.class);
+        CommitViewModel commitsViewModel = ViewModelProviders.of(this).get(CommitViewModel.class);
         if (savedInstanceState!=null){
             pageCount = commitsViewModel.getCommitsPage();
         } else {
