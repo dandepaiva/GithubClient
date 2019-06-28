@@ -1,4 +1,4 @@
-package com.exaud.githubclient;
+package com.exaud.githubclient.repositories;
 
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
@@ -7,6 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.exaud.githubclient.R;
 import com.exaud.githubclient.models.Repository;
 
 import java.util.ArrayList;

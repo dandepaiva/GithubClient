@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="360dp"
     android:layout_height="wrap_content"
-    tools:context=".RepositorySearchActivity">
+    tools:context=".repositories.RepositorySearchActivity">
 
 
     <EditText

@@ -1,4 +1,4 @@
-package com.exaud.githubclient;
+package com.exaud.githubclient.repositories;
 
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
@@ -6,13 +6,15 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.View;
-import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.exaud.githubclient.GithubClientApplication;
+import com.exaud.githubclient.GithubRepository;
+import com.exaud.githubclient.R;
+import com.exaud.githubclient.commits.CommitListActivity;
 import com.exaud.githubclient.models.Repository;
 
 import java.util.List;
@@ -52,13 +54,13 @@ public class RepositorySearchActivity extends AppCompatActivity {
         pageCount = repositoryViewModel.getRepositoryPage();
         user = repositoryViewModel.getUser();
 
-        if (savedInstanceState!=null && repositoryViewModel.getRepositoryPage()>0) {
+        if (savedInstanceState!=null && repositoryViewModel.getRepositoryPage() > 0) {
             searchButtonPress(repositoryViewModel);
 
         }
 
         showButton.setOnClickListener(v -> {
-            repositoryViewModel.setRepositoryPage(pageCount= 1);
+            repositoryViewModel.setRepositoryPage(pageCount = 1);
             repositoryViewModel.setUser(user = searchTextView.getText().toString());
             searchButtonPress(repositoryViewModel);
         });

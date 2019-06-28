@@ -17,17 +17,17 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
 
-class GithubRepository {
+public class GithubRepository {
     private final Executor executor = Executors.newFixedThreadPool(3);
 
     private GithubRepository() {
     }
 
-    static GithubRepository getInstance() {
+    public static GithubRepository getInstance() {
         return Singleton.INSTANCE;
     }
 
-    void loadDataNodes(int currentPage, String user, RepositoryCallback callback) {
+    public void loadDataNodes(int currentPage, String user, RepositoryCallback callback) {
 
         if (currentPage <= 0) {
             callback.onError("This is the first page!");
@@ -62,7 +62,7 @@ class GithubRepository {
     }
 
 
-    void loadCommits(String url, int currentPageCommits, CommitCallback commitCallback) {
+    public void loadCommits(String url, int currentPageCommits, CommitCallback commitCallback) {
 
         if (currentPageCommits <= 0) {
             commitCallback.onError("This is the first page!");
@@ -81,7 +81,7 @@ class GithubRepository {
                             commitList.add(commit.getCommit());
                         }
 
-                        commitCallback.showCommit(commitList);
+                        commitCallback.showCommits(commitList);
                     },
                     error -> {
                         String errorFormat = error.getLocalizedMessage();
@@ -104,7 +104,7 @@ class GithubRepository {
     }
 
     public interface CommitCallback {
-        void showCommit(ArrayList<Commit> commitList);
+        void showCommits(List<Commit> commitList);
         void onError(String message);
     }
 

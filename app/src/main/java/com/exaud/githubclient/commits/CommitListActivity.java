@@ -1,4 +1,4 @@
-package com.exaud.githubclient;
+package com.exaud.githubclient.commits;
 
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
@@ -6,14 +6,18 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.exaud.githubclient.GithubClientApplication;
+import com.exaud.githubclient.GithubRepository;
+import com.exaud.githubclient.R;
+import com.exaud.githubclient.repositories.RepositorySearchActivity;
 import com.exaud.githubclient.models.Commit;
 
 import java.util.ArrayList;
+import java.util.List;
 
 
 public class CommitListActivity extends AppCompatActivity {
@@ -43,7 +47,7 @@ public class CommitListActivity extends AppCompatActivity {
 
         GithubRepository.getInstance().loadCommits(url, pageCount, new GithubRepository.CommitCallback() {
             @Override
-            public void showCommit(ArrayList<Commit> commitList) {
+            public void showCommits(List<Commit> commitList) {
                 urlPersistent = url;
 
                 commitsViewModel.setCommitsPage(pageCount);
@@ -73,12 +77,11 @@ public class CommitListActivity extends AppCompatActivity {
             nextButton.setEnabled(false);
             GithubRepository.getInstance().loadCommits(urlPersistent, pageCount + 1, new GithubRepository.CommitCallback() {
                 @Override
-                public void showCommit(ArrayList<Commit> commitList) {
+                public void showCommits(List<Commit> commitList) {
                     if (commitList.size() != 0) {
                         nextButton.setEnabled(commitRecyclerViewAdapter.updateCommitArray(commitList));
-                        pageCount++;
+                        commitsViewModel.setCommitsPage(pageCount++);
                         pageNumber.setText(getString(R.string.page_number, pageCount));
-                        commitsViewModel.setCommitsPage(pageCount);
                     } else {
                         nextButton.setEnabled(true);
                         onError("This is the last page!");
@@ -100,12 +103,11 @@ public class CommitListActivity extends AppCompatActivity {
 
             GithubRepository.getInstance().loadCommits(urlPersistent, pageCount - 1, new GithubRepository.CommitCallback() {
                 @Override
-                public void showCommit(ArrayList<Commit> commitList) {
+                public void showCommits(List<Commit> commitList) {
                     if (commitList.size() != 0) {
                         commitRecyclerViewAdapter.updateCommitArray(commitList);
-                        pageCount--;
+                        commitsViewModel.setCommitsPage(pageCount--);
                         pageNumber.setText(getString(R.string.page_number, pageCount));
-                        commitsViewModel.setCommitsPage(pageCount);
                     }
                 }
 

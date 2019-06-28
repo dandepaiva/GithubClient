@@ -1,19 +1,20 @@
-package com.exaud.githubclient;
+package com.exaud.githubclient.commits;
 
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.exaud.githubclient.R;
 import com.exaud.githubclient.models.Commit;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class CommitRecyclerViewAdapter extends RecyclerView.Adapter<CommitRecyclerViewAdapter.CommitRecyclerViewHolder> {
-    private ArrayList<Commit> commits;
+    private List<Commit> commits;
 
     public CommitRecyclerViewAdapter() {
         this.commits = new ArrayList<>();
@@ -37,7 +38,7 @@ public class CommitRecyclerViewAdapter extends RecyclerView.Adapter<CommitRecycl
     }
 
     @SuppressWarnings("SameReturnValue")
-    boolean updateCommitArray(ArrayList<Commit> commits) {
+    boolean updateCommitArray(List<Commit> commits) {
         this.commits = commits;
         notifyDataSetChanged();
         return true;
