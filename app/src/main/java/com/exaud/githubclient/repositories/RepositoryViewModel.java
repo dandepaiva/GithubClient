@@ -1,21 +1,17 @@
 package com.exaud.githubclient.repositories;
 
 import android.arch.lifecycle.ViewModel;
-import android.util.Log;
 
 public class RepositoryViewModel extends ViewModel {
-    private int repositoryPage=-1;
+    private int page;
     private String user;
 
-    public int getRepositoryPage(){
-        return repositoryPage;
+    public int getPage(){
+        return page;
     }
 
-    public void setRepositoryPage(int page){
-        if(page<=0){
-            Log.e("PAGE", "setCommitsPage: PAGE ERROR");
-        }
-        this.repositoryPage = page;
+    public void setPage(int page){
+        this.page = page;
     }
 
     public String getUser() {

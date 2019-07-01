@@ -6,7 +6,6 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -24,15 +23,12 @@ public class RepositorySearchActivity extends AppCompatActivity {
     private RepositoriesListAdapter githubAdapter;
     private TextView pageNumber;
 
-    private int pageCount;
-    private String user="exaud";
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_repositories_list);
 
-        RepositoryViewModel repositoryViewModel = ViewModelProviders.of(this).get(RepositoryViewModel.class);
+        RepositoryViewModel viewModel = ViewModelProviders.of(this).get(RepositoryViewModel.class);
 
         Button showButton = findViewById(R.id.button_show);
         Button nextButton = findViewById(R.id.next);
@@ -51,41 +47,41 @@ public class RepositorySearchActivity extends AppCompatActivity {
         githubAdapter = new RepositoriesListAdapter();
         recyclerView.setAdapter(githubAdapter);
 
-        pageCount = repositoryViewModel.getRepositoryPage();
-        user = repositoryViewModel.getUser();
 
-        if (savedInstanceState!=null && repositoryViewModel.getRepositoryPage() > 0) {
-            searchButtonPress(repositoryViewModel);
-
+        if (savedInstanceState != null && viewModel.getUser() != null) {
+            searchButtonPress(viewModel);
         }
 
         showButton.setOnClickListener(v -> {
-            repositoryViewModel.setRepositoryPage(pageCount = 1);
-            repositoryViewModel.setUser(user = searchTextView.getText().toString());
-            searchButtonPress(repositoryViewModel);
+            showButton.setEnabled(false);
+            viewModel.setPage(1);
+            viewModel.setUser(searchTextView.getText().toString());
+            searchButtonPress(viewModel);
+            showButton.setEnabled(true);
         });
 
         nextButton.setOnClickListener(v -> {
 
-            if(repositoryViewModel.getRepositoryPage()<0) {
-                showToast("Write a Github Username and Press Find!");
+            if (viewModel.getUser() == null) {
+                showToast("Write a Valid Github Username and Press Find!");
                 return;
             }
 
             nextButton.setEnabled(false);
-            GithubRepository.getInstance().loadDataNodes(pageCount + 1, user, new GithubRepository.RepositoryCallback() {
+            GithubRepository.getInstance().loadDataNodes(viewModel.getPage() + 1, viewModel.getUser(), new GithubRepository.RepositoryCallback() {
                 @Override
                 public void showDataNodes(List<Repository> repositories) {
                     if (repositories.size() != 0) {
                         runOnUiThread(() -> {
-                            nextButton.setEnabled(githubAdapter.updateDataNodeArrayList(repositories));
-                            pageCount++;
-                            pageNumber.setText(getString(R.string.page_number, pageCount));
-                            repositoryViewModel.setRepositoryPage(pageCount);
+                            githubAdapter.updateDataNodeArrayList(repositories);
+                            int page = viewModel.getPage() + 1;
+                            pageNumber.setText(getString(R.string.page_number, page));
+                            viewModel.setPage(page);
+                            nextButton.setEnabled(true);
 
                         });
                     } else {
-                        this.onError("No more pages for " + user + "!");
+                        this.onError("No more pages for " + viewModel.getUser() + "!");
                         nextButton.setEnabled(true);
                     }
                 }
@@ -101,20 +97,27 @@ public class RepositorySearchActivity extends AppCompatActivity {
 
         previousButton.setOnClickListener(v -> {
 
-            if(pageCount<=1) {
+            if (viewModel.getUser() == null) {
+                showToast("Write a Valid Github Username and Press Find!");
+                return;
+            }
+
+            if (viewModel.getPage() <= 1) {
                 showToast("This is the first page!");
                 return;
             }
 
-            GithubRepository.getInstance().loadDataNodes(pageCount - 1, user, new GithubRepository.RepositoryCallback() {
+            previousButton.setEnabled(false);
+            GithubRepository.getInstance().loadDataNodes(viewModel.getPage() - 1, viewModel.getUser(), new GithubRepository.RepositoryCallback() {
                 @Override
                 public void showDataNodes(List<Repository> repositories) {
                     if (repositories.size() != 0) {
                         runOnUiThread(() -> {
                             githubAdapter.updateDataNodeArrayList(repositories);
-                            pageCount--;
-                            pageNumber.setText(getString(R.string.page_number, pageCount));
-                            repositoryViewModel.setRepositoryPage(pageCount);
+                            int page = viewModel.getPage() - 1;
+                            pageNumber.setText(getString(R.string.page_number, page));
+                            viewModel.setPage(page);
+                            previousButton.setEnabled(true);
                         });
                     }
                 }
@@ -122,7 +125,7 @@ public class RepositorySearchActivity extends AppCompatActivity {
                 @Override
                 public void onError(String message) {
                     showToast(message);
-                    pageNumber.setText(getString(R.string.page_number, 1));
+                    previousButton.setEnabled(true);
                 }
             });
         });
@@ -146,20 +149,20 @@ public class RepositorySearchActivity extends AppCompatActivity {
     }
 
     /**
-     *
      * @param repositoryViewModel GithubViewModel the VM used to control page number
      */
-    void searchButtonPress(RepositoryViewModel repositoryViewModel){
-        int pageCount = repositoryViewModel.getRepositoryPage();
+    void searchButtonPress(RepositoryViewModel repositoryViewModel) {
+        int page = repositoryViewModel.getPage();
         String user = repositoryViewModel.getUser();
-        GithubRepository.getInstance().loadDataNodes(pageCount, user, new GithubRepository.RepositoryCallback() {
+
+        GithubRepository.getInstance().loadDataNodes(page, user, new GithubRepository.RepositoryCallback() {
             @Override
             public void showDataNodes(List<Repository> repositories) {
                 if (repositories.size() != 0) {
                     runOnUiThread(() -> {
                         githubAdapter.updateDataNodeArrayList(repositories);
-                        pageNumber.setText(getString(R.string.page_number, pageCount));
-                        repositoryViewModel.setRepositoryPage(pageCount);
+                        pageNumber.setText(getString(R.string.page_number, page));
+                        repositoryViewModel.setPage(page);
                     });
                 } else {
                     showToast(GithubClientApplication.getContext().getString(R.string.no_public_repositories_message));
@@ -168,12 +171,10 @@ public class RepositorySearchActivity extends AppCompatActivity {
 
             @Override
             public void onError(String message) {
+                repositoryViewModel.setUser(null);
+                pageNumber.setText(null);
                 showToast(message);
             }
         });
-        pageNumber.setText(getString(R.string.page_number, pageCount));
-    }
-
-    public void search(View view) {
     }
 }

@@ -37,11 +37,9 @@ public class CommitRecyclerViewAdapter extends RecyclerView.Adapter<CommitRecycl
         return commits.size();
     }
 
-    @SuppressWarnings("SameReturnValue")
-    boolean updateCommitArray(List<Commit> commits) {
+    void updateCommitArray(List<Commit> commits) {
         this.commits = commits;
         notifyDataSetChanged();
-        return true;
     }
 
     public static class CommitRecyclerViewHolder extends RecyclerView.ViewHolder {

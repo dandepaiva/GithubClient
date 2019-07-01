@@ -41,11 +41,9 @@ public class RepositoriesListAdapter extends RecyclerView.Adapter<RepositoriesLi
         }
     }
 
-    @SuppressWarnings("SameReturnValue")
-    boolean updateDataNodeArrayList(List<Repository> repositoryList) {
+    void updateDataNodeArrayList(List<Repository> repositoryList) {
         this.repositoryList = repositoryList;
         notifyDataSetChanged();
-        return true;
     }
 
     public static class GithubClientViewHolder extends RecyclerView.ViewHolder {

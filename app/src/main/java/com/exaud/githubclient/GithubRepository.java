@@ -27,9 +27,9 @@ public class GithubRepository {
         return Singleton.INSTANCE;
     }
 
-    public void loadDataNodes(int currentPage, String user, RepositoryCallback callback) {
+    public void loadDataNodes(int page, String user, RepositoryCallback callback) {
 
-        if (currentPage <= 0) {
+        if (page <= 0) {
             callback.onError("This is the first page!");
             return;
         }
@@ -37,7 +37,7 @@ public class GithubRepository {
         RequestQueue queue = Volley.newRequestQueue(GithubClientApplication.getContext());
         String url = "https://api.github.com/users/%1$s/repos?page=%2$d";
         Runnable runnable = () -> {
-            String urlFormat = String.format(Locale.CANADA, url, user, currentPage);
+            String urlFormat = String.format(Locale.CANADA, url, user, page);
             StringRequest stringRequest = new StringRequest(Request.Method.GET, urlFormat,
                     response -> {
                         Gson gson = new Gson();
