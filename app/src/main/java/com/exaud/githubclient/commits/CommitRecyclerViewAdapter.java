@@ -34,7 +34,11 @@ public class CommitRecyclerViewAdapter extends RecyclerView.Adapter<CommitRecycl
 
     @Override
     public int getItemCount() {
-        return commits.size();
+        if(commits!=null) {
+            return this.commits.size();
+        } else {
+            return 0;
+        }
     }
 
     void updateCommitArray(List<Commit> commits) {
@@ -53,7 +57,6 @@ public class CommitRecyclerViewAdapter extends RecyclerView.Adapter<CommitRecycl
         }
 
         void onBind(Commit commit) {
-            //Log.e("TESTING", "onBind: " + commit.getAuthor().getName());
             nameView.setText(commit.getAuthor().getName().replace("Ã©", "é"));
             messageView.setText(commit.getMessage());
         }

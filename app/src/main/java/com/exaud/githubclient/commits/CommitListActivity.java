@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -16,10 +17,12 @@ import com.exaud.githubclient.R;
 import com.exaud.githubclient.repositories.RepositorySearchActivity;
 import com.exaud.githubclient.models.Commit;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.util.List;
 
 
-public class CommitListActivity extends AppCompatActivity implements CommitViewModel.ErrorListener {
+public class CommitListActivity extends AppCompatActivity implements PropertyChangeListener {
     private CommitRecyclerViewAdapter commitRecyclerViewAdapter;
 
     @Override
@@ -54,7 +57,6 @@ public class CommitListActivity extends AppCompatActivity implements CommitViewM
                 commitRecyclerViewAdapter = new CommitRecyclerViewAdapter();
                 recyclerView.setAdapter(commitRecyclerViewAdapter);
 
-                viewModel.setCurrentList(commitList);
                 commitRecyclerViewAdapter.updateCommitArray(commitList);
 
                 pageNumber.setText(getString(R.string.page_number, viewModel.getPage()));
@@ -66,14 +68,18 @@ public class CommitListActivity extends AppCompatActivity implements CommitViewM
             }
         });
 
-
-        /* ----------STUPID*/
-        GithubRepository.getInstance().loadCommits(
-                viewModel.getUrl(), viewModel.getPage() + 1, new GithubRepository.CommitCallback() {
+        nextButton.setOnClickListener(v -> {
+            nextButton.setEnabled(false);
+            
+            GithubRepository.getInstance().loadCommits(viewModel.getUrl(), viewModel.getPage() + 1, new GithubRepository.CommitCallback() {
                 @Override
                 public void showCommits(List<Commit> commitList) {
                     if (commitList.size() != 0) {
-                        viewModel.setNextList(commitList);
+                        commitRecyclerViewAdapter.updateCommitArray(commitList);
+                        int page = viewModel.getPage() + 1;
+                        pageNumber.setText(getString(R.string.page_number, page));
+                        viewModel.setPage(page);
+                        nextButton.setEnabled(true);
                     } else {
                         onError("This is the last page!");
                     }
@@ -82,38 +88,35 @@ public class CommitListActivity extends AppCompatActivity implements CommitViewM
                 @Override
                 public void onError(String message) {
                     showToast(message);
+                    nextButton.setEnabled(true);
                 }
             });
-        /* ----------STUPID*/
-
-
-
-
-        nextButton.setOnClickListener(v -> {
-            nextButton.setEnabled(false);
-
-            List<Commit> commitList = viewModel.onPressNext(this);
-            commitRecyclerViewAdapter.updateCommitArray(commitList);
-            pageNumber.setText(getString(R.string.page_number, viewModel.getPage()));
-
-            nextButton.setEnabled(true);
-
-
         });
 
         previousButton.setOnClickListener(v -> {
             if (viewModel.getPage() <= 1) {
-                onError("This is the first page!");
                 return;
             }
 
-            previousButton.setEnabled(false);
+            nextButton.setEnabled(false);
+            GithubRepository.getInstance().loadCommits(viewModel.getUrl(), viewModel.getPage() - 1, new GithubRepository.CommitCallback() {
+                @Override
+                public void showCommits(List<Commit> commitList) {
+                    if (commitList.size() != 0) {
+                        commitRecyclerViewAdapter.updateCommitArray(commitList);
+                        int page = viewModel.getPage() - 1;
+                        viewModel.setPage(page);
+                        pageNumber.setText(getString(R.string.page_number, page));
+                        nextButton.setEnabled(true);
+                    }
+                }
 
-            List<Commit> commitList = viewModel.onPressPrevious(this);
-            commitRecyclerViewAdapter.updateCommitArray(commitList);
-            pageNumber.setText(getString(R.string.page_number, viewModel.getPage()));
-
-            previousButton.setEnabled(true);
+                @Override
+                public void onError(String message) {
+                    showToast(message);
+                    nextButton.setEnabled(true);
+                }
+            });
         });
     }
 
@@ -122,7 +125,7 @@ public class CommitListActivity extends AppCompatActivity implements CommitViewM
     }
 
     @Override
-    public void onError(String errorMessage) {
-        showToast(errorMessage);
+    public void propertyChange(PropertyChangeEvent evt) {
+        Log.e("YEP", "propertyChange: evt.newValue is: " + evt.getNewValue() );
     }
 }

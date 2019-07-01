@@ -62,16 +62,16 @@ public class GithubRepository {
     }
 
 
-    public void loadCommits(String url, int currentPageCommits, CommitCallback commitCallback) {
+    public void loadCommits(String url, int page, CommitCallback commitCallback) {
 
-        if (currentPageCommits <= 0) {
+        if (page <= 0) {
             commitCallback.onError("This is the first page!");
             return;
         }
 
         RequestQueue queue = Volley.newRequestQueue(GithubClientApplication.getContext());
         Runnable runnable = () -> {
-            StringRequest stringRequest = new StringRequest(Request.Method.GET, url + "/commits?page=" + currentPageCommits,
+            StringRequest stringRequest = new StringRequest(Request.Method.GET, url + "/commits?page=" + page,
                     response -> {
                         Gson gson = new Gson();
 
@@ -94,8 +94,6 @@ public class GithubRepository {
             queue.add(stringRequest);
         };
         executor.execute(runnable);
-
-
     }
 
     public interface RepositoryCallback {
