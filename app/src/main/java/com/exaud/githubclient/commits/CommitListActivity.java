@@ -61,6 +61,7 @@ public class CommitListActivity extends AppCompatActivity {
                 }
             });
         } else {
+            pageNumber.setText(getString(R.string.page_number, viewModel.getPage()));
             commitRecyclerViewAdapter.updateCommitArray(viewModel.getCommitList());
         }
 

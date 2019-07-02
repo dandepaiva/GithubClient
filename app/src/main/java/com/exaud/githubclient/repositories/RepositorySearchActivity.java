@@ -56,7 +56,30 @@ public class RepositorySearchActivity extends AppCompatActivity {
             showButton.setEnabled(false);
             viewModel.setPage(1);
             viewModel.setUser(searchTextView.getText().toString());
-            searchButtonPress(viewModel);
+
+
+            GithubRepository.getInstance().loadDataNodes(viewModel.getPage(), viewModel.getUser(), new GithubRepository.RepositoryCallback() {
+                @Override
+                public void showDataNodes(List<Repository> repositories) {
+                    if (repositories.size() != 0) {
+                        viewModel.setRepositories(repositories);
+                        pageNumber.setText(getString(R.string.page_number, viewModel.getPage()));
+                    } else {
+                        showToast(GithubClientApplication.getContext().getString(R.string.no_public_repositories_message));
+                    }
+                    githubAdapter.updateDataNodeArrayList(repositories);
+                }
+
+                @Override
+                public void onError(String message) {
+                    githubAdapter.updateDataNodeArrayList(null);
+                    viewModel.setRepositories(null);
+                    pageNumber.setText(getString(R.string.page_number, 1));
+                    showToast(message);
+                }
+            });
+
+
             showButton.setEnabled(true);
         });
 
@@ -102,11 +125,13 @@ public class RepositorySearchActivity extends AppCompatActivity {
 
             if (viewModel.getUser() == null) {
                 showToast("Write a Valid Github Username and Press Find!");
+                previousButton.setEnabled(true);
                 return;
             }
 
             if (viewModel.getPage() <= 1) {
                 showToast("This is the first page!");
+                previousButton.setEnabled(true);
                 return;
             }
 
@@ -150,34 +175,5 @@ public class RepositorySearchActivity extends AppCompatActivity {
         Intent commitListActivity = new Intent(GithubClientApplication.getContext(), CommitListActivity.class);
         commitListActivity.putExtra(REPOSITORY_URL, url);
         GithubClientApplication.getContext().startActivity(commitListActivity);
-    }
-
-    /**
-     * @param repositoryViewModel GithubViewModel the VM used to control page number
-     */
-    void searchButtonPress(RepositoryViewModel repositoryViewModel) {
-        int page = repositoryViewModel.getPage();
-        String user = repositoryViewModel.getUser();
-
-        GithubRepository.getInstance().loadDataNodes(page, user, new GithubRepository.RepositoryCallback() {
-            @Override
-            public void showDataNodes(List<Repository> repositories) {
-                if (repositories.size() != 0) {
-                    repositoryViewModel.setRepositories(repositories);
-                    pageNumber.setText(getString(R.string.page_number, page));
-                } else {
-                    showToast(GithubClientApplication.getContext().getString(R.string.no_public_repositories_message));
-                }
-                githubAdapter.updateDataNodeArrayList(repositories);
-                repositoryViewModel.setPage(page);
-            }
-
-            @Override
-            public void onError(String message) {
-                githubAdapter.updateDataNodeArrayList(null);
-                pageNumber.setText(null);
-                showToast(message);
-            }
-        });
     }
 }
