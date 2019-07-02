@@ -2,6 +2,8 @@ package com.exaud.githubclient.repositories;
 
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
+import android.databinding.Observable;
+import android.databinding.ObservableList;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -22,15 +24,23 @@ public class RepositorySearchActivity extends AppCompatActivity {
     public final static String REPOSITORY_URL = "repository_url";
     private RepositoriesListAdapter githubAdapter;
     private TextView pageNumber;
+    private RepositoryViewModel viewModel;
+
+    private Observable.OnPropertyChangedCallback onPropertyChangedCallback = new Observable.OnPropertyChangedCallback() {
+        @Override
+        public void onPropertyChanged(Observable sender, int propertyId) {
+            githubAdapter.updateDataNodeArrayList(viewModel.getRepositories().get());
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_repositories_list);
 
-        RepositoryViewModel viewModel = ViewModelProviders.of(this).get(RepositoryViewModel.class);
+        viewModel = ViewModelProviders.of(this).get(RepositoryViewModel.class);
 
-        Button showButton = findViewById(R.id.button_show);
+        Button findButton = findViewById(R.id.button_show);
         Button nextButton = findViewById(R.id.next);
         Button previousButton = findViewById(R.id.previous);
 
@@ -49,38 +59,21 @@ public class RepositorySearchActivity extends AppCompatActivity {
 
         if (savedInstanceState != null && viewModel.getRepositories() != null) {
             pageNumber.setText(getString(R.string.page_number, viewModel.getPage()));
-            githubAdapter.updateDataNodeArrayList(viewModel.getRepositories());
+            githubAdapter.updateDataNodeArrayList(viewModel.getRepositories().get());
         }
 
-        showButton.setOnClickListener(v -> {
-            showButton.setEnabled(false);
+        findButton.setOnClickListener(v -> {
+            findButton.setEnabled(false);
             viewModel.setPage(1);
             viewModel.setUser(searchTextView.getText().toString());
 
+            viewModel.onFindButtonPress();
 
-            GithubRepository.getInstance().loadDataNodes(viewModel.getPage(), viewModel.getUser(), new GithubRepository.RepositoryCallback() {
-                @Override
-                public void showDataNodes(List<Repository> repositories) {
-                    if (repositories.size() != 0) {
-                        viewModel.setRepositories(repositories);
-                        pageNumber.setText(getString(R.string.page_number, viewModel.getPage()));
-                    } else {
-                        showToast(GithubClientApplication.getContext().getString(R.string.no_public_repositories_message));
-                    }
-                    githubAdapter.updateDataNodeArrayList(repositories);
-                }
+            //showToast(GithubClientApplication.getContext().getString(R.string.no_public_repositories_message));
 
-                @Override
-                public void onError(String message) {
-                    githubAdapter.updateDataNodeArrayList(null);
-                    viewModel.setRepositories(null);
-                    pageNumber.setText(getString(R.string.page_number, 1));
-                    showToast(message);
-                }
-            });
+            githubAdapter.updateDataNodeArrayList(viewModel.getRepositories().get());
 
-
-            showButton.setEnabled(true);
+            findButton.setEnabled(true);
         });
 
         nextButton.setOnClickListener(v -> {
@@ -97,7 +90,7 @@ public class RepositorySearchActivity extends AppCompatActivity {
                 public void showDataNodes(List<Repository> repositories) {
                     if (repositories.size() != 0) {
                         runOnUiThread(() -> {
-                            viewModel.setRepositories(repositories);
+                            //viewModel.setRepositories(repositories);
                             githubAdapter.updateDataNodeArrayList(repositories);
                             int page = viewModel.getPage() + 1;
                             pageNumber.setText(getString(R.string.page_number, page));
@@ -140,7 +133,7 @@ public class RepositorySearchActivity extends AppCompatActivity {
                 public void showDataNodes(List<Repository> repositories) {
                     if (repositories.size() != 0) {
                         runOnUiThread(() -> {
-                            viewModel.setRepositories(repositories);
+                            //viewModel.setRepositories(repositories);
 
                             githubAdapter.updateDataNodeArrayList(repositories);
                             int page = viewModel.getPage() - 1;
@@ -160,6 +153,20 @@ public class RepositorySearchActivity extends AppCompatActivity {
         });
     }
 
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+
+        viewModel.getRepositories().addOnPropertyChangedCallback(onPropertyChangedCallback);
+    }
+
+    @Override
+    protected void onStop() {
+        viewModel.getRepositories().removeOnPropertyChangedCallback(onPropertyChangedCallback);
+
+        super.onStop();
+    }
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
