@@ -43,27 +43,26 @@ public class CommitListActivity extends AppCompatActivity {
 
         if (savedInstanceState == null) {
             viewModel.setPage(1);
+            Intent intent = getIntent();
+            viewModel.setRepositoryUrl(intent.getStringExtra(RepositorySearchActivity.REPOSITORY_URL));
+
+            GithubRepository.getInstance().loadCommits(viewModel.getRepositoryUrl(), viewModel.getPage(), new GithubRepository.CommitCallback() {
+                @Override
+                public void showCommits(List<Commit> commitList) {
+
+                    commitRecyclerViewAdapter.updateCommitArray(commitList);
+                    viewModel.setCommitList(commitList);
+                    pageNumber.setText(getString(R.string.page_number, viewModel.getPage()));
+                }
+
+                @Override
+                public void onError(String message) {
+
+                }
+            });
         } else {
             commitRecyclerViewAdapter.updateCommitArray(viewModel.getCommitList());
         }
-
-        Intent intent = getIntent();
-        viewModel.setRepositoryUrl(intent.getStringExtra(RepositorySearchActivity.REPOSITORY_URL));
-
-        GithubRepository.getInstance().loadCommits(viewModel.getRepositoryUrl(), viewModel.getPage(), new GithubRepository.CommitCallback() {
-            @Override
-            public void showCommits(List<Commit> commitList) {
-
-                commitRecyclerViewAdapter.updateCommitArray(commitList);
-                viewModel.setCommitList(commitList);
-                pageNumber.setText(getString(R.string.page_number, viewModel.getPage()));
-            }
-
-            @Override
-            public void onError(String message) {
-
-            }
-        });
 
         nextButton.setOnClickListener(v -> {
             nextButton.setEnabled(false);
