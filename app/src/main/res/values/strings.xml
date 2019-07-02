@@ -6,4 +6,5 @@
     <string name="previous">previous</string>
     <string name="page_number">"%1$d" </string>
     <string name="search_hint">Github Username</string>
+    <string name="initial_page_number">1</string>
 </resources>

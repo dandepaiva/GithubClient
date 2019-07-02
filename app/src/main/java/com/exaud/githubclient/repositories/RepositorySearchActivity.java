@@ -6,7 +6,6 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -20,7 +19,7 @@ import com.exaud.githubclient.models.Repository;
 import java.util.List;
 
 public class RepositorySearchActivity extends AppCompatActivity {
-    public final static String COMMITLIST = "com.exaud.githubclient.commitList";
+    public final static String REPOSITORY_URL = "repository_url";
     private RepositoriesListAdapter githubAdapter;
     private TextView pageNumber;
 
@@ -36,19 +35,6 @@ public class RepositorySearchActivity extends AppCompatActivity {
         Button previousButton = findViewById(R.id.previous);
 
 
-        previousButton.setVisibility(View.INVISIBLE);
-        nextButton.setVisibility(View.INVISIBLE);
-
-        if (savedInstanceState != null && viewModel.getUser() != null) {
-            searchButtonPress(viewModel);
-            if (!viewModel.isLastPage()) {
-                nextButton.setVisibility(View.VISIBLE);
-            }
-            if (viewModel.getPage() > 1) {
-                previousButton.setVisibility(View.VISIBLE);
-            }
-        }
-
         TextView searchTextView = findViewById(R.id.search_text);
         pageNumber = findViewById(R.id.page_number);
 
@@ -61,12 +47,16 @@ public class RepositorySearchActivity extends AppCompatActivity {
         githubAdapter = new RepositoriesListAdapter();
         recyclerView.setAdapter(githubAdapter);
 
+        if (savedInstanceState != null && viewModel.getRepositories() != null) {
+            pageNumber.setText(getString(R.string.page_number, viewModel.getPage()));
+            githubAdapter.updateDataNodeArrayList(viewModel.getRepositories());
+        }
+
         showButton.setOnClickListener(v -> {
             showButton.setEnabled(false);
             viewModel.setPage(1);
             viewModel.setUser(searchTextView.getText().toString());
             searchButtonPress(viewModel);
-            nextButton.setVisibility(View.VISIBLE);
             showButton.setEnabled(true);
         });
 
@@ -75,6 +65,7 @@ public class RepositorySearchActivity extends AppCompatActivity {
 
             if (viewModel.getUser() == null) {
                 showToast("Write a Valid Github Username and Press Find!");
+                nextButton.setEnabled(true);
                 return;
             }
 
@@ -83,17 +74,11 @@ public class RepositorySearchActivity extends AppCompatActivity {
                 public void showDataNodes(List<Repository> repositories) {
                     if (repositories.size() != 0) {
                         runOnUiThread(() -> {
+                            viewModel.setRepositories(repositories);
                             githubAdapter.updateDataNodeArrayList(repositories);
                             int page = viewModel.getPage() + 1;
                             pageNumber.setText(getString(R.string.page_number, page));
                             viewModel.setPage(page);
-                            previousButton.setVisibility(View.VISIBLE);
-
-                            if (repositories.size() < 30) {
-                                viewModel.setLastPage(true);
-                                nextButton.setVisibility(View.INVISIBLE);
-                            }
-
                         });
                     } else {
                         this.onError("No more pages for " + viewModel.getUser() + "!");
@@ -130,15 +115,12 @@ public class RepositorySearchActivity extends AppCompatActivity {
                 public void showDataNodes(List<Repository> repositories) {
                     if (repositories.size() != 0) {
                         runOnUiThread(() -> {
+                            viewModel.setRepositories(repositories);
+
                             githubAdapter.updateDataNodeArrayList(repositories);
                             int page = viewModel.getPage() - 1;
                             pageNumber.setText(getString(R.string.page_number, page));
                             viewModel.setPage(page);
-                            if (page <= 1) {
-                                previousButton.setVisibility(View.INVISIBLE);
-                            }
-                            nextButton.setVisibility(View.VISIBLE);
-                            viewModel.setLastPage(false);
                         });
                     }
                     previousButton.setEnabled(true);
@@ -166,7 +148,7 @@ public class RepositorySearchActivity extends AppCompatActivity {
 
     static void startCommitListActivity(String url) {
         Intent commitListActivity = new Intent(GithubClientApplication.getContext(), CommitListActivity.class);
-        commitListActivity.putExtra(COMMITLIST, url);
+        commitListActivity.putExtra(REPOSITORY_URL, url);
         GithubClientApplication.getContext().startActivity(commitListActivity);
     }
 
@@ -181,9 +163,9 @@ public class RepositorySearchActivity extends AppCompatActivity {
             @Override
             public void showDataNodes(List<Repository> repositories) {
                 if (repositories.size() != 0) {
+                    repositoryViewModel.setRepositories(repositories);
                     pageNumber.setText(getString(R.string.page_number, page));
                 } else {
-                    pageNumber.setText("");
                     showToast(GithubClientApplication.getContext().getString(R.string.no_public_repositories_message));
                 }
                 githubAdapter.updateDataNodeArrayList(repositories);

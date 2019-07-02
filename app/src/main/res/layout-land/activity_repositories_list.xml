@@ -72,6 +72,7 @@
             android:textAlignment="center"
             android:textColor="@color/black"
             android:textSize="25sp"
+            android:text="@string/initial_page_number"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/next"
             app:layout_constraintStart_toEndOf="@+id/previous"

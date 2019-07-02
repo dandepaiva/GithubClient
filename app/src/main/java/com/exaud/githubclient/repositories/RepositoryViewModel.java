@@ -2,10 +2,14 @@ package com.exaud.githubclient.repositories;
 
 import android.arch.lifecycle.ViewModel;
 
+import com.exaud.githubclient.models.Repository;
+
+import java.util.List;
+
 public class RepositoryViewModel extends ViewModel {
     private int page;
     private String user;
-    boolean lastPage;
+    private List<Repository> repositories;
 
     public int getPage() {
         return page;
@@ -23,11 +27,11 @@ public class RepositoryViewModel extends ViewModel {
         this.user = user;
     }
 
-    void setLastPage(boolean lastPage) {
-        this.lastPage = lastPage;
+    public List<Repository> getRepositories() {
+        return repositories;
     }
 
-    public boolean isLastPage() {
-        return lastPage;
+    public void setRepositories(List<Repository> repositories) {
+        this.repositories = repositories;
     }
 }

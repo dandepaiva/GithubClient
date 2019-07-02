@@ -2,17 +2,21 @@ package com.exaud.githubclient.commits;
 
 import android.arch.lifecycle.ViewModel;
 
-public class CommitViewModel extends ViewModel {
-    boolean lastPage;
-    private String url;
-    private int page;
+import com.exaud.githubclient.models.Commit;
 
-    public String getUrl() {
-        return url;
+import java.util.List;
+
+public class CommitViewModel extends ViewModel {
+    private String repositoryUrl;
+    private int page;
+    private List<Commit> commitList;
+
+    public String getRepositoryUrl() {
+        return repositoryUrl;
     }
 
-    public void setUrl(String url) {
-        this.url = url;
+    public void setRepositoryUrl(String repositoryUrl) {
+        this.repositoryUrl = repositoryUrl;
     }
 
     public int getPage() {
@@ -23,11 +27,11 @@ public class CommitViewModel extends ViewModel {
         this.page = page;
     }
 
-    public boolean isLastPage() {
-        return lastPage;
+    public List<Commit> getCommitList() {
+        return commitList;
     }
 
-    public void setLastPage(boolean lastPage) {
-        this.lastPage = lastPage;
+    public void setCommitList(List<Commit> commitList) {
+        this.commitList = commitList;
     }
 }

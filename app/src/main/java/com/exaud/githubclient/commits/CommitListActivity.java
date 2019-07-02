@@ -6,7 +6,6 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -33,42 +32,30 @@ public class CommitListActivity extends AppCompatActivity {
         Button nextButton = findViewById(R.id.next_commits);
         TextView pageNumber = findViewById(R.id.page_number_commits);
 
+        RecyclerView recyclerView = findViewById(R.id.commit_recycler_view);
+        recyclerView.setHasFixedSize(true);
+
+        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(GithubClientApplication.getContext());
+        recyclerView.setLayoutManager(layoutManager);
+
+        commitRecyclerViewAdapter = new CommitRecyclerViewAdapter();
+        recyclerView.setAdapter(commitRecyclerViewAdapter);
+
         if (savedInstanceState == null) {
             viewModel.setPage(1);
+        } else {
+            commitRecyclerViewAdapter.updateCommitArray(viewModel.getCommitList());
         }
-
-        if (viewModel.isLastPage()) {
-            nextButton.setVisibility(View.INVISIBLE);
-        }
-
-        if (viewModel.getPage() <= 1) {
-            previousButton.setVisibility(View.INVISIBLE);
-        }
-
 
         Intent intent = getIntent();
-        viewModel.setUrl(intent.getStringExtra(RepositorySearchActivity.COMMITLIST));
+        viewModel.setRepositoryUrl(intent.getStringExtra(RepositorySearchActivity.REPOSITORY_URL));
 
-        GithubRepository.getInstance().loadCommits(viewModel.getUrl(), viewModel.getPage(), new GithubRepository.CommitCallback() {
+        GithubRepository.getInstance().loadCommits(viewModel.getRepositoryUrl(), viewModel.getPage(), new GithubRepository.CommitCallback() {
             @Override
             public void showCommits(List<Commit> commitList) {
-                TextView pageNumber = findViewById(R.id.page_number_commits);
-                RecyclerView recyclerView = findViewById(R.id.commit_recycler_view);
-                recyclerView.setHasFixedSize(true);
-
-                RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(GithubClientApplication.getContext());
-                recyclerView.setLayoutManager(layoutManager);
-
-                commitRecyclerViewAdapter = new CommitRecyclerViewAdapter();
-                recyclerView.setAdapter(commitRecyclerViewAdapter);
 
                 commitRecyclerViewAdapter.updateCommitArray(commitList);
-
-                if (commitList.size() < 30) {
-                    viewModel.setLastPage(true);
-                    nextButton.setVisibility(View.INVISIBLE);
-                }
-
+                viewModel.setCommitList(commitList);
                 pageNumber.setText(getString(R.string.page_number, viewModel.getPage()));
             }
 
@@ -81,20 +68,16 @@ public class CommitListActivity extends AppCompatActivity {
         nextButton.setOnClickListener(v -> {
             nextButton.setEnabled(false);
 
-            GithubRepository.getInstance().loadCommits(viewModel.getUrl(), viewModel.getPage() + 1, new GithubRepository.CommitCallback() {
+            GithubRepository.getInstance().loadCommits(viewModel.getRepositoryUrl(), viewModel.getPage() + 1, new GithubRepository.CommitCallback() {
                 @Override
                 public void showCommits(List<Commit> commitList) {
                     if (commitList.size() != 0) {
                         commitRecyclerViewAdapter.updateCommitArray(commitList);
+                        viewModel.setCommitList(commitList);
+
                         int page = viewModel.getPage() + 1;
                         pageNumber.setText(getString(R.string.page_number, page));
                         viewModel.setPage(page);
-                        previousButton.setVisibility(View.VISIBLE);
-
-                        if (commitList.size() < 30) {
-                            viewModel.setLastPage(true);
-                            nextButton.setVisibility(View.INVISIBLE);
-                        }
                     } else {
                         onError("This is the last page!");
                     }
@@ -114,24 +97,20 @@ public class CommitListActivity extends AppCompatActivity {
 
             if (viewModel.getPage() <= 1) {
                 showToast("This is the first page!");
+                previousButton.setEnabled(true);
                 return;
             }
 
-            GithubRepository.getInstance().loadCommits(viewModel.getUrl(), viewModel.getPage() - 1, new GithubRepository.CommitCallback() {
+            GithubRepository.getInstance().loadCommits(viewModel.getRepositoryUrl(), viewModel.getPage() - 1, new GithubRepository.CommitCallback() {
                 @Override
                 public void showCommits(List<Commit> commitList) {
                     if (commitList.size() != 0) {
                         commitRecyclerViewAdapter.updateCommitArray(commitList);
+                        viewModel.setCommitList(commitList);
+
                         int page = viewModel.getPage() - 1;
                         viewModel.setPage(page);
                         pageNumber.setText(getString(R.string.page_number, page));
-
-                        if (page <= 1) {
-                            previousButton.setVisibility(View.INVISIBLE);
-                        }
-
-                        nextButton.setVisibility(View.VISIBLE);
-                        viewModel.setLastPage(false);
                     }
                     previousButton.setEnabled(true);
                 }
