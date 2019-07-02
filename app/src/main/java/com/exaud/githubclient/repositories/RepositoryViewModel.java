@@ -5,12 +5,13 @@ import android.arch.lifecycle.ViewModel;
 public class RepositoryViewModel extends ViewModel {
     private int page;
     private String user;
+    boolean lastPage;
 
-    public int getPage(){
+    public int getPage() {
         return page;
     }
 
-    public void setPage(int page){
+    public void setPage(int page) {
         this.page = page;
     }
 
@@ -20,5 +21,13 @@ public class RepositoryViewModel extends ViewModel {
 
     public void setUser(String user) {
         this.user = user;
+    }
+
+    void setLastPage(boolean lastPage) {
+        this.lastPage = lastPage;
+    }
+
+    public boolean isLastPage() {
+        return lastPage;
     }
 }

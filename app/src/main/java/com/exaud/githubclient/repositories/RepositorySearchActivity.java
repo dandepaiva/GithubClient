@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -34,9 +35,22 @@ public class RepositorySearchActivity extends AppCompatActivity {
         Button nextButton = findViewById(R.id.next);
         Button previousButton = findViewById(R.id.previous);
 
+
+        previousButton.setVisibility(View.INVISIBLE);
+        nextButton.setVisibility(View.INVISIBLE);
+
+        if (savedInstanceState != null && viewModel.getUser() != null) {
+            searchButtonPress(viewModel);
+            if (!viewModel.isLastPage()) {
+                nextButton.setVisibility(View.VISIBLE);
+            }
+            if (viewModel.getPage() > 1) {
+                previousButton.setVisibility(View.VISIBLE);
+            }
+        }
+
         TextView searchTextView = findViewById(R.id.search_text);
         pageNumber = findViewById(R.id.page_number);
-
 
         RecyclerView recyclerView = findViewById(R.id.repository_recycler_view);
         recyclerView.setHasFixedSize(true);
@@ -47,27 +61,23 @@ public class RepositorySearchActivity extends AppCompatActivity {
         githubAdapter = new RepositoriesListAdapter();
         recyclerView.setAdapter(githubAdapter);
 
-
-        if (savedInstanceState != null && viewModel.getUser() != null) {
-            searchButtonPress(viewModel);
-        }
-
         showButton.setOnClickListener(v -> {
             showButton.setEnabled(false);
             viewModel.setPage(1);
             viewModel.setUser(searchTextView.getText().toString());
             searchButtonPress(viewModel);
+            nextButton.setVisibility(View.VISIBLE);
             showButton.setEnabled(true);
         });
 
         nextButton.setOnClickListener(v -> {
+            nextButton.setEnabled(false);
 
             if (viewModel.getUser() == null) {
                 showToast("Write a Valid Github Username and Press Find!");
                 return;
             }
 
-            nextButton.setEnabled(false);
             GithubRepository.getInstance().loadDataNodes(viewModel.getPage() + 1, viewModel.getUser(), new GithubRepository.RepositoryCallback() {
                 @Override
                 public void showDataNodes(List<Repository> repositories) {
@@ -77,18 +87,25 @@ public class RepositorySearchActivity extends AppCompatActivity {
                             int page = viewModel.getPage() + 1;
                             pageNumber.setText(getString(R.string.page_number, page));
                             viewModel.setPage(page);
-                            nextButton.setEnabled(true);
+                            previousButton.setVisibility(View.VISIBLE);
+
+                            if (repositories.size() < 30) {
+                                viewModel.setLastPage(true);
+                                nextButton.setVisibility(View.INVISIBLE);
+                            }
 
                         });
                     } else {
                         this.onError("No more pages for " + viewModel.getUser() + "!");
-                        nextButton.setEnabled(true);
                     }
+                    nextButton.setEnabled(true);
+
                 }
 
                 @Override
                 public void onError(String message) {
                     showToast(message);
+                    nextButton.setEnabled(true);
                 }
             });
 
@@ -96,6 +113,7 @@ public class RepositorySearchActivity extends AppCompatActivity {
 
 
         previousButton.setOnClickListener(v -> {
+            previousButton.setEnabled(false);
 
             if (viewModel.getUser() == null) {
                 showToast("Write a Valid Github Username and Press Find!");
@@ -107,7 +125,6 @@ public class RepositorySearchActivity extends AppCompatActivity {
                 return;
             }
 
-            previousButton.setEnabled(false);
             GithubRepository.getInstance().loadDataNodes(viewModel.getPage() - 1, viewModel.getUser(), new GithubRepository.RepositoryCallback() {
                 @Override
                 public void showDataNodes(List<Repository> repositories) {
@@ -117,9 +134,14 @@ public class RepositorySearchActivity extends AppCompatActivity {
                             int page = viewModel.getPage() - 1;
                             pageNumber.setText(getString(R.string.page_number, page));
                             viewModel.setPage(page);
-                            previousButton.setEnabled(true);
+                            if (page <= 1) {
+                                previousButton.setVisibility(View.INVISIBLE);
+                            }
+                            nextButton.setVisibility(View.VISIBLE);
+                            viewModel.setLastPage(false);
                         });
                     }
+                    previousButton.setEnabled(true);
                 }
 
                 @Override
@@ -159,19 +181,18 @@ public class RepositorySearchActivity extends AppCompatActivity {
             @Override
             public void showDataNodes(List<Repository> repositories) {
                 if (repositories.size() != 0) {
-                    runOnUiThread(() -> {
-                        githubAdapter.updateDataNodeArrayList(repositories);
-                        pageNumber.setText(getString(R.string.page_number, page));
-                        repositoryViewModel.setPage(page);
-                    });
+                    pageNumber.setText(getString(R.string.page_number, page));
                 } else {
+                    pageNumber.setText("");
                     showToast(GithubClientApplication.getContext().getString(R.string.no_public_repositories_message));
                 }
+                githubAdapter.updateDataNodeArrayList(repositories);
+                repositoryViewModel.setPage(page);
             }
 
             @Override
             public void onError(String message) {
-                repositoryViewModel.setUser(null);
+                githubAdapter.updateDataNodeArrayList(null);
                 pageNumber.setText(null);
                 showToast(message);
             }

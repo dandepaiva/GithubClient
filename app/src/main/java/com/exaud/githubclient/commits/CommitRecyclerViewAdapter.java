@@ -34,7 +34,7 @@ public class CommitRecyclerViewAdapter extends RecyclerView.Adapter<CommitRecycl
 
     @Override
     public int getItemCount() {
-        if(commits!=null) {
+        if (commits != null) {
             return this.commits.size();
         } else {
             return 0;
