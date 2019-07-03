@@ -7,10 +7,7 @@ import android.widget.Toast;
 
 import com.exaud.githubclient.GithubClientApplication;
 import com.exaud.githubclient.GithubRepository;
-import com.exaud.githubclient.R;
 import com.exaud.githubclient.models.Commit;
-import com.exaud.githubclient.models.Repository;
-import com.exaud.githubclient.repositories.RepositoryViewModel;
 
 import java.util.List;
 
@@ -19,7 +16,7 @@ public class CommitViewModel extends ViewModel {
     private ObservableInt page;
     private ObservableField<List<Commit>> commitList;
 
-    CommitViewModel(){
+    CommitViewModel() {
         commitList = new ObservableField<>();
         page = new ObservableInt();
     }
@@ -40,7 +37,7 @@ public class CommitViewModel extends ViewModel {
         return commitList;
     }
 
-    void onOpenCommitListActivity(){
+    void onOpenCommitListActivity() {
         GithubRepository.getInstance().loadCommits(1, getRepositoryUrl(), new GithubRepository.CommitCallback() {
             @Override
             public void showCommits(List<Commit> commitList) {
@@ -56,7 +53,7 @@ public class CommitViewModel extends ViewModel {
         });
     }
 
-    void onNextButtonPress(){
+    void onNextButtonPress() {
         int nextPage = getPage().get() + 1;
         GithubRepository.getInstance().loadCommits(nextPage, getRepositoryUrl(), new GithubRepository.CommitCallback() {
             @Override
@@ -76,7 +73,7 @@ public class CommitViewModel extends ViewModel {
         });
     }
 
-    void onPreviousButtonPress(){
+    void onPreviousButtonPress() {
         int previousPage = getPage().get() - 1;
         GithubRepository.getInstance().loadCommits(previousPage, getRepositoryUrl(), new GithubRepository.CommitCallback() {
             @Override

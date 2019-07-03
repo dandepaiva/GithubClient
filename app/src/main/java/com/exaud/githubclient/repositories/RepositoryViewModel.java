@@ -59,6 +59,7 @@ public class RepositoryViewModel extends ViewModel {
 
     void onNextButtonPress() {
         int nextPage = this.page.get() + 1;
+
         GithubRepository.getInstance().loadDataNodes(nextPage, this.user, new GithubRepository.RepositoryCallback() {
 
             @Override
@@ -78,13 +79,14 @@ public class RepositoryViewModel extends ViewModel {
         });
     }
 
-    void onPreviousButtonPress(){
-        int previousPage = this.page.get()-1;
+    void onPreviousButtonPress() {
+        int previousPage = this.page.get() - 1;
 
         GithubRepository.getInstance().loadDataNodes(previousPage, this.user, new GithubRepository.RepositoryCallback() {
+
             @Override
             public void showDataNodes(List<Repository> repositories) {
-                if(repositories.size() > 0){
+                if (repositories.size() > 0) {
                     RepositoryViewModel.this.repositories.set(repositories);
                     getPage().set(previousPage);
                 }

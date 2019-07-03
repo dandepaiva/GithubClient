@@ -147,7 +147,6 @@ public class RepositorySearchActivity extends AppCompatActivity {
         findButton.setEnabled(false);
         nextButton.setEnabled(false);
         previousButton.setEnabled(false);
-
     }
 
     void enableButtons() {
@@ -158,6 +157,5 @@ public class RepositorySearchActivity extends AppCompatActivity {
         findButton.setEnabled(true);
         nextButton.setEnabled(true);
         previousButton.setEnabled(true);
-
     }
 }
