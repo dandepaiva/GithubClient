@@ -20,6 +20,9 @@ public class RepositorySearchActivity extends AppCompatActivity {
     private RepositoriesListAdapter githubAdapter;
     private RepositoryViewModel viewModel;
     private TextView pageNumber;
+    private Button nextButton;
+    private Button previousButton;
+    private Button findButton;
 
     private Observable.OnPropertyChangedCallback onRepositoriesChangedCallback = new Observable.OnPropertyChangedCallback() {
         @Override
@@ -35,6 +38,28 @@ public class RepositorySearchActivity extends AppCompatActivity {
         }
     };
 
+    private Observable.OnPropertyChangedCallback onNextFinishedChangedCallback = new Observable.OnPropertyChangedCallback() {
+        @Override
+        public void onPropertyChanged(Observable sender, int propertyId) {
+            nextButton.setEnabled(viewModel.getNextButtonEnabled().get());
+        }
+    };
+
+    private Observable.OnPropertyChangedCallback onPreviousFinishedChangedCallback = new Observable.OnPropertyChangedCallback() {
+        @Override
+        public void onPropertyChanged(Observable sender, int propertyId) {
+            previousButton.setEnabled(viewModel.getPreviousButtonEnabled().get());
+
+        }
+    };
+
+    private Observable.OnPropertyChangedCallback onFindFinishedChangedCallback = new Observable.OnPropertyChangedCallback() {
+        @Override
+        public void onPropertyChanged(Observable sender, int propertyId) {
+            findButton.setEnabled(viewModel.getFindButtonEnabled().get());
+
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,9 +68,9 @@ public class RepositorySearchActivity extends AppCompatActivity {
 
         viewModel = ViewModelProviders.of(this).get(RepositoryViewModel.class);
 
-        Button findButton = findViewById(R.id.button_show);
-        Button nextButton = findViewById(R.id.next);
-        Button previousButton = findViewById(R.id.previous);
+        findButton = findViewById(R.id.button_show);
+        nextButton = findViewById(R.id.next);
+        previousButton = findViewById(R.id.previous);
 
 
         TextView searchTextView = findViewById(R.id.search_text);
@@ -66,60 +91,36 @@ public class RepositorySearchActivity extends AppCompatActivity {
         }
 
         findButton.setOnClickListener(v -> {
-            disableButtons();
-            viewModel.getPage().set(1);
             viewModel.setUser(searchTextView.getText().toString());
 
             viewModel.onFindButtonPress();
-            enableButtons();
 
         });
 
-        nextButton.setOnClickListener(v -> {
-            disableButtons();
+        nextButton.setOnClickListener(v -> viewModel.onNextButtonPress());
 
-            if (viewModel.getUser() == null) {
-                showToast("Write a Valid Github Username and Press Find!");
-                enableButtons();
-                return;
-            }
-
-            viewModel.onNextButtonPress();
-            enableButtons();
-        });
-
-
-        previousButton.setOnClickListener(v -> {
-            disableButtons();
-
-            if (viewModel.getUser() == null) {
-                showToast("Write a Valid Github Username and Press Find!");
-                enableButtons();
-                return;
-            }
-
-            if (viewModel.getPage().get() <= 1) {
-                showToast("This is the first page!");
-                enableButtons();
-                return;
-            }
-
-            viewModel.onPreviousButtonPress();
-            enableButtons();
-        });
+        previousButton.setOnClickListener(v -> viewModel.onPreviousButtonPress());
     }
 
     @Override
     protected void onStart() {
         super.onStart();
+
         viewModel.getRepositories().addOnPropertyChangedCallback(onRepositoriesChangedCallback);
         viewModel.getPage().addOnPropertyChangedCallback(onPageChangedCallback);
+        viewModel.getNextButtonEnabled().addOnPropertyChangedCallback(onNextFinishedChangedCallback);
+        viewModel.getPreviousButtonEnabled().addOnPropertyChangedCallback(onPreviousFinishedChangedCallback);
+        viewModel.getFindButtonEnabled().addOnPropertyChangedCallback(onFindFinishedChangedCallback);
     }
 
     @Override
     protected void onStop() {
         viewModel.getRepositories().removeOnPropertyChangedCallback(onRepositoriesChangedCallback);
         viewModel.getPage().removeOnPropertyChangedCallback(onPageChangedCallback);
+        viewModel.getNextButtonEnabled().removeOnPropertyChangedCallback(onNextFinishedChangedCallback);
+        viewModel.getPreviousButtonEnabled().removeOnPropertyChangedCallback(onPreviousFinishedChangedCallback);
+        viewModel.getFindButtonEnabled().removeOnPropertyChangedCallback(onFindFinishedChangedCallback);
+
         super.onStop();
     }
 
@@ -129,14 +130,15 @@ public class RepositorySearchActivity extends AppCompatActivity {
         super.onSaveInstanceState(outState);
     }
 
-    private void showToast(String text) {
-        Toast.makeText(GithubClientApplication.getContext(), text, Toast.LENGTH_SHORT).show();
-    }
-
     static void startCommitListActivity(String url) {
         Intent commitListActivity = new Intent(GithubClientApplication.getContext(), CommitListActivity.class);
         commitListActivity.putExtra(REPOSITORY_URL, url);
         GithubClientApplication.getContext().startActivity(commitListActivity);
+    }
+
+    // UNUSED
+    private void showToast(String text) {
+        Toast.makeText(GithubClientApplication.getContext(), text, Toast.LENGTH_SHORT).show();
     }
 
     void disableButtons() {

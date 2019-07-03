@@ -1,6 +1,7 @@
 package com.exaud.githubclient.repositories;
 
 import android.arch.lifecycle.ViewModel;
+import android.databinding.ObservableBoolean;
 import android.databinding.ObservableField;
 import android.databinding.ObservableInt;
 import android.widget.Toast;
@@ -16,10 +17,16 @@ public class RepositoryViewModel extends ViewModel {
     private String user;
     private ObservableInt page;
     private ObservableField<List<Repository>> repositories;
+    private ObservableBoolean nextButtonEnabled;
+    private ObservableBoolean previousButtonEnabled;
+    private ObservableBoolean findButtonEnabled;
 
     public RepositoryViewModel() {
         repositories = new ObservableField<>();
         page = new ObservableInt();
+        nextButtonEnabled = new ObservableBoolean();
+        previousButtonEnabled = new ObservableBoolean();
+        findButtonEnabled = new ObservableBoolean();
     }
 
     public ObservableInt getPage() {
@@ -38,14 +45,29 @@ public class RepositoryViewModel extends ViewModel {
         return repositories;
     }
 
-    void onFindButtonPress() {
+    public ObservableBoolean getNextButtonEnabled() {
+        return nextButtonEnabled;
+    }
 
-        GithubRepository.getInstance().loadDataNodes(this.page.get(), this.user, new GithubRepository.RepositoryCallback() {
+    public ObservableBoolean getPreviousButtonEnabled() {
+        return previousButtonEnabled;
+    }
+
+    public ObservableBoolean getFindButtonEnabled() {
+        return findButtonEnabled;
+    }
+
+    void onFindButtonPress() {
+        getFindButtonEnabled().set(false);
+
+        GithubRepository.getInstance().loadDataNodes(1, this.user, new GithubRepository.RepositoryCallback() {
             @Override
             public void showDataNodes(List<Repository> repositories) {
                 if (repositories.size() != 0) {
                     RepositoryViewModel.this.repositories.set(repositories);
                 }
+                page.set(1);
+                getFindButtonEnabled().set(true);
             }
 
             @Override
@@ -53,12 +75,21 @@ public class RepositoryViewModel extends ViewModel {
                 RepositoryViewModel.this.repositories.set(null);
                 page.set(1);
                 showToast(message);
+                getFindButtonEnabled().set(true);
             }
         });
     }
 
     void onNextButtonPress() {
+        getNextButtonEnabled().set(false);
         int nextPage = this.page.get() + 1;
+
+        if (getUser() == null) {
+            showToast("Write a Valid Github Username and Press Find!");
+            getNextButtonEnabled().set(true);
+            return;
+        }
+
 
         GithubRepository.getInstance().loadDataNodes(nextPage, this.user, new GithubRepository.RepositoryCallback() {
 
@@ -70,17 +101,33 @@ public class RepositoryViewModel extends ViewModel {
                 } else {
                     this.onError("No more pages for " + getUser() + "!");
                 }
+                getNextButtonEnabled().set(true);
             }
 
             @Override
             public void onError(String message) {
                 showToast(message);
+                getNextButtonEnabled().set(true);
             }
         });
     }
 
     void onPreviousButtonPress() {
+        getPreviousButtonEnabled().set(false);
         int previousPage = this.page.get() - 1;
+
+        if (getUser() == null) {
+            showToast("Write a Valid Github Username and Press Find!");
+            getPreviousButtonEnabled().set(true);
+            return;
+        }
+
+        if (getPage().get() <= 1) {
+            showToast("This is the first page!");
+            getPreviousButtonEnabled().set(true);
+            return;
+        }
+
 
         GithubRepository.getInstance().loadDataNodes(previousPage, this.user, new GithubRepository.RepositoryCallback() {
 
@@ -90,11 +137,13 @@ public class RepositoryViewModel extends ViewModel {
                     RepositoryViewModel.this.repositories.set(repositories);
                     getPage().set(previousPage);
                 }
+                getPreviousButtonEnabled().set(true);
             }
 
             @Override
             public void onError(String message) {
                 showToast(message);
+                getPreviousButtonEnabled().set(true);
             }
         });
     }
