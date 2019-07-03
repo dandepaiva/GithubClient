@@ -99,6 +99,5 @@ public class RepositoryViewModel extends ViewModel {
 
     void showToast(String message) {
         Toast.makeText(GithubClientApplication.getContext(), message, Toast.LENGTH_SHORT).show();
-
     }
 }

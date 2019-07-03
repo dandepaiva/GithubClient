@@ -12,18 +12,14 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.exaud.githubclient.GithubClientApplication;
-import com.exaud.githubclient.GithubRepository;
 import com.exaud.githubclient.R;
 import com.exaud.githubclient.commits.CommitListActivity;
-import com.exaud.githubclient.models.Repository;
-
-import java.util.List;
 
 public class RepositorySearchActivity extends AppCompatActivity {
     public final static String REPOSITORY_URL = "repository_url";
     private RepositoriesListAdapter githubAdapter;
-    private TextView pageNumber;
     private RepositoryViewModel viewModel;
+    private TextView pageNumber;
 
     private Observable.OnPropertyChangedCallback onRepositoriesChangedCallback = new Observable.OnPropertyChangedCallback() {
         @Override
@@ -32,7 +28,7 @@ public class RepositorySearchActivity extends AppCompatActivity {
         }
     };
 
-    private  Observable.OnPropertyChangedCallback onPageChangedCallback = new Observable.OnPropertyChangedCallback() {
+    private Observable.OnPropertyChangedCallback onPageChangedCallback = new Observable.OnPropertyChangedCallback() {
         @Override
         public void onPropertyChanged(Observable sender, int propertyId) {
             pageNumber.setText(getString(R.string.page_number, viewModel.getPage().get()));
@@ -70,46 +66,46 @@ public class RepositorySearchActivity extends AppCompatActivity {
         }
 
         findButton.setOnClickListener(v -> {
-            deactivateButtons();
+            disableButtons();
             viewModel.getPage().set(1);
             viewModel.setUser(searchTextView.getText().toString());
 
             viewModel.onFindButtonPress();
-            activateButtons();
+            enableButtons();
 
         });
 
         nextButton.setOnClickListener(v -> {
-            deactivateButtons();
+            disableButtons();
 
             if (viewModel.getUser() == null) {
                 showToast("Write a Valid Github Username and Press Find!");
-                activateButtons();
+                enableButtons();
                 return;
             }
 
             viewModel.onNextButtonPress();
-            activateButtons();
+            enableButtons();
         });
 
 
         previousButton.setOnClickListener(v -> {
-            deactivateButtons();
+            disableButtons();
 
             if (viewModel.getUser() == null) {
                 showToast("Write a Valid Github Username and Press Find!");
-                activateButtons();
+                enableButtons();
                 return;
             }
 
             if (viewModel.getPage().get() <= 1) {
                 showToast("This is the first page!");
-                activateButtons();
+                enableButtons();
                 return;
             }
 
             viewModel.onPreviousButtonPress();
-            activateButtons();
+            enableButtons();
         });
     }
 
@@ -143,7 +139,7 @@ public class RepositorySearchActivity extends AppCompatActivity {
         GithubClientApplication.getContext().startActivity(commitListActivity);
     }
 
-    void deactivateButtons(){
+    void disableButtons() {
         Button findButton = findViewById(R.id.button_show);
         Button nextButton = findViewById(R.id.next);
         Button previousButton = findViewById(R.id.previous);
@@ -153,7 +149,8 @@ public class RepositorySearchActivity extends AppCompatActivity {
         previousButton.setEnabled(false);
 
     }
-    void activateButtons(){
+
+    void enableButtons() {
         Button findButton = findViewById(R.id.button_show);
         Button nextButton = findViewById(R.id.next);
         Button previousButton = findViewById(R.id.previous);

@@ -62,7 +62,7 @@ public class GithubRepository {
     }
 
 
-    public void loadCommits(String url, int page, CommitCallback commitCallback) {
+    public void loadCommits(int page, String url, CommitCallback commitCallback) {
 
         if (page <= 0) {
             commitCallback.onError("This is the first page!");
