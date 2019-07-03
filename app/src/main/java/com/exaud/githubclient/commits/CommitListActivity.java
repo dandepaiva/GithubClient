@@ -19,6 +19,8 @@ public class CommitListActivity extends AppCompatActivity {
     private CommitRecyclerViewAdapter commitRecyclerViewAdapter;
     private CommitViewModel viewModel;
     private TextView pageNumber;
+    private Button nextButton;
+    private Button previousButton;
 
     private Observable.OnPropertyChangedCallback onCommitListChangedCallback = new Observable.OnPropertyChangedCallback() {
         @Override
@@ -34,6 +36,20 @@ public class CommitListActivity extends AppCompatActivity {
         }
     };
 
+    private Observable.OnPropertyChangedCallback onNextFinishedChangedCallback = new Observable.OnPropertyChangedCallback() {
+        @Override
+        public void onPropertyChanged(Observable sender, int propertyId) {
+            nextButton.setEnabled(viewModel.getNextButtonEnabled().get());
+        }
+    };
+
+    private Observable.OnPropertyChangedCallback onPreviousFinishedChangedCallback = new Observable.OnPropertyChangedCallback() {
+        @Override
+        public void onPropertyChanged(Observable sender, int propertyId) {
+            previousButton.setEnabled(viewModel.getNextButtonEnabled().get());
+        }
+    };
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -41,8 +57,8 @@ public class CommitListActivity extends AppCompatActivity {
 
         viewModel = ViewModelProviders.of(this).get(CommitViewModel.class);
 
-        Button previousButton = findViewById(R.id.previous_commits);
-        Button nextButton = findViewById(R.id.next_commits);
+        previousButton = findViewById(R.id.previous_commits);
+        nextButton = findViewById(R.id.next_commits);
         pageNumber = findViewById(R.id.page_number_commits);
 
         RecyclerView recyclerView = findViewById(R.id.commit_recycler_view);
@@ -63,38 +79,28 @@ public class CommitListActivity extends AppCompatActivity {
             commitRecyclerViewAdapter.updateCommitArray(viewModel.getCommitList().get());
         }
 
-        nextButton.setOnClickListener(v -> {
-            disableButtons();
+        nextButton.setOnClickListener(v -> viewModel.onNextButtonPress());
 
-            viewModel.onNextButtonPress();
-
-            enableButtons();
-        });
-
-        previousButton.setOnClickListener(v -> {
-            disableButtons();
-
-            if (viewModel.getPage().get() <= 1) {
-                showToast("This is the first page!");
-                enableButtons();
-                return;
-            }
-            viewModel.onPreviousButtonPress();
-            enableButtons();
-        });
+        previousButton.setOnClickListener(v -> viewModel.onPreviousButtonPress());
     }
 
     @Override
     protected void onStart() {
         super.onStart();
+
         viewModel.getCommitList().addOnPropertyChangedCallback(onCommitListChangedCallback);
         viewModel.getPage().addOnPropertyChangedCallback(onPageChangedCallback);
+        viewModel.getNextButtonEnabled().addOnPropertyChangedCallback(onNextFinishedChangedCallback);
+        viewModel.getPreviousButtonEnabled().addOnPropertyChangedCallback(onPreviousFinishedChangedCallback);
     }
 
     @Override
     protected void onStop() {
         viewModel.getCommitList().removeOnPropertyChangedCallback(onCommitListChangedCallback);
         viewModel.getPage().removeOnPropertyChangedCallback(onPageChangedCallback);
+        viewModel.getNextButtonEnabled().removeOnPropertyChangedCallback(onNextFinishedChangedCallback);
+        viewModel.getPreviousButtonEnabled().removeOnPropertyChangedCallback(onPreviousFinishedChangedCallback);
+
         super.onStop();
     }
 
