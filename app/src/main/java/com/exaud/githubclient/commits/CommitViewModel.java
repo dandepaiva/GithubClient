@@ -26,10 +26,6 @@ public class CommitViewModel extends ViewModel {
         previousButtonEnabled = new ObservableBoolean();
     }
 
-    public String getRepositoryUrl() {
-        return repositoryUrl;
-    }
-
     public void setRepositoryUrl(String repositoryUrl) {
         this.repositoryUrl = repositoryUrl;
     }
@@ -51,7 +47,7 @@ public class CommitViewModel extends ViewModel {
     }
 
     void onOpenCommitListActivity() {
-        GithubRepository.getInstance().loadCommits(1, getRepositoryUrl(), new GithubRepository.CommitCallback() {
+        GithubRepository.getInstance().loadCommits(1, repositoryUrl, new GithubRepository.CommitCallback() {
             @Override
             public void showCommits(List<Commit> commitList) {
 
@@ -67,54 +63,54 @@ public class CommitViewModel extends ViewModel {
     }
 
     void onNextButtonPress() {
-        this.nextButtonEnabled.set(false);
+        nextButtonEnabled.set(false);
 
-        int nextPage = getPage().get() + 1;
-        GithubRepository.getInstance().loadCommits(nextPage, getRepositoryUrl(), new GithubRepository.CommitCallback() {
+        int nextPage = page.get() + 1;
+        GithubRepository.getInstance().loadCommits(nextPage, repositoryUrl, new GithubRepository.CommitCallback() {
             @Override
             public void showCommits(List<Commit> commitList) {
                 if (commitList.size() > 0) {
                     CommitViewModel.this.commitList.set(commitList);
-                    CommitViewModel.this.page.set(nextPage);
+                    page.set(nextPage);
                 } else {
                     onError("This is the last page");
                 }
-                CommitViewModel.this.nextButtonEnabled.set(true);
+                nextButtonEnabled.set(true);
             }
 
             @Override
             public void onError(String message) {
                 showToast(message);
-                CommitViewModel.this.nextButtonEnabled.set(true);
+                nextButtonEnabled.set(true);
             }
         });
     }
 
     void onPreviousButtonPress() {
-        this.previousButtonEnabled.set(false);
+        previousButtonEnabled.set(false);
 
-        if (getPage().get() <= 1) {
+        if (page.get() <= 1) {
             showToast("This is the first page!");
             previousButtonEnabled.set(true);
             return;
         }
 
-        int previousPage = getPage().get() - 1;
-        GithubRepository.getInstance().loadCommits(previousPage, getRepositoryUrl(), new GithubRepository.CommitCallback() {
+        int previousPage = page.get() - 1;
+        GithubRepository.getInstance().loadCommits(previousPage, repositoryUrl, new GithubRepository.CommitCallback() {
             @Override
             public void showCommits(List<Commit> commitList) {
                 if (commitList.size() > 0) {
                     CommitViewModel.this.commitList.set(commitList);
-                    getPage().set(previousPage);
+                    page.set(previousPage);
                 }
-                CommitViewModel.this.previousButtonEnabled.set(true);
+                previousButtonEnabled.set(true);
 
             }
 
             @Override
             public void onError(String message) {
                 showToast(message);
-                CommitViewModel.this.previousButtonEnabled.set(true);
+                previousButtonEnabled.set(true);
             }
         });
     }

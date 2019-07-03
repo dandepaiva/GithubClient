@@ -124,12 +124,6 @@ public class RepositorySearchActivity extends AppCompatActivity {
         super.onStop();
     }
 
-    @Override
-    protected void onSaveInstanceState(Bundle outState) {
-
-        super.onSaveInstanceState(outState);
-    }
-
     static void startCommitListActivity(String url) {
         Intent commitListActivity = new Intent(GithubClientApplication.getContext(), CommitListActivity.class);
         commitListActivity.putExtra(REPOSITORY_URL, url);
