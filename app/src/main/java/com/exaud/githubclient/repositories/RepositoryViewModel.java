@@ -3,7 +3,6 @@ package com.exaud.githubclient.repositories;
 import android.arch.lifecycle.ViewModel;
 import android.databinding.ObservableBoolean;
 import android.databinding.ObservableField;
-import android.databinding.ObservableInt;
 import android.view.View;
 import android.widget.Toast;
 
@@ -22,24 +21,15 @@ public class RepositoryViewModel extends ViewModel {
     private ObservableBoolean previousButtonEnabled;
     private ObservableBoolean findButtonEnabled;
     private ObservableField<String> pageNumberText;
+    private ObservableField<String> userText;
 
     public RepositoryViewModel() {
         repositories = new ObservableField<>();
-        nextButtonEnabled = new ObservableBoolean();
-        nextButtonEnabled.set(true);
-        previousButtonEnabled = new ObservableBoolean();
-        previousButtonEnabled.set(true);
-        findButtonEnabled = new ObservableBoolean();
-        findButtonEnabled.set(true);
+        nextButtonEnabled = new ObservableBoolean(true);
+        previousButtonEnabled = new ObservableBoolean(true);
+        findButtonEnabled = new ObservableBoolean(true);
         pageNumberText = new ObservableField<>();
-    }
-
-    public void setUser(String user) {
-        this.user = user;
-    }
-
-    public int getPage() {
-        return page;
+        userText = new ObservableField<>("googlesamples");
     }
 
     public ObservableField<List<Repository>> getRepositories() {
@@ -62,9 +52,13 @@ public class RepositoryViewModel extends ViewModel {
         return pageNumberText;
     }
 
-    public void onFindButtonPress() {
+    public ObservableField<String> getUserText() {
+        return userText;
+    }
+
+    public void onFindButtonPress(View view) {
         findButtonEnabled.set(false);
-        //this.user = user;
+        user = userText.get();
         GithubRepository.getInstance().loadDataNodes(1, this.user, new GithubRepository.RepositoryCallback() {
             @Override
             public void showDataNodes(List<Repository> repositories) {

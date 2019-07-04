@@ -20,7 +20,7 @@
         android:ems="10"
         android:hint="@string/search_hint"
         android:inputType="textPersonName"
-        android:text="googlesamples"
+        android:text="@={viewmodel.userText}"
         android:imeOptions="actionDone"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
@@ -34,6 +34,7 @@
         android:text="@string/find"
         android:textColor="@color/backColor"
         android:enabled="@{viewmodel.findButtonEnabled}"
+        android:onClick="@{viewmodel::onFindButtonPress}"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/search_text"
         app:layout_constraintTop_toTopOf="parent" />
