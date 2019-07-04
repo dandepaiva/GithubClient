@@ -1,4 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
+<layout>
+    <data>
+        <variable
+            name="viewmodel"
+            type="com.exaud.githubclient.repositories.RepositoryViewModel"/>
+    </data>
 <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -27,6 +33,7 @@
         android:background="@drawable/button_box"
         android:text="@string/find"
         android:textColor="@color/backColor"
+        android:enabled="@{viewmodel.findButtonEnabled}"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/search_text"
         app:layout_constraintTop_toTopOf="parent" />
@@ -58,6 +65,8 @@
             android:background="@drawable/button_box"
             android:text="@string/next"
             android:textColor="@color/backColor"
+            android:enabled="@{viewmodel.nextButtonEnabled}"
+            android:onClick="@{viewmodel::onNextButtonPress}"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/page_number" />
@@ -72,7 +81,7 @@
             android:textAlignment="center"
             android:textColor="@color/black"
             android:textSize="25sp"
-            android:text="@string/initial_page_number"
+            android:text="@{viewmodel.pageNumberText}"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/next"
             app:layout_constraintStart_toEndOf="@+id/previous"
@@ -85,8 +94,11 @@
             android:background="@drawable/button_box"
             android:text="@string/previous"
             android:textColor="@color/backColor"
+            android:enabled="@{viewmodel.previousButtonEnabled}"
+            android:onClick="@{viewmodel::onPreviousButtonPress}"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@id/page_number"
             app:layout_constraintStart_toStartOf="parent" />
     </android.support.constraint.ConstraintLayout>
 </android.support.constraint.ConstraintLayout>
+</layout>
