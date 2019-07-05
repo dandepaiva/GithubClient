@@ -3,7 +3,6 @@ package com.exaud.githubclient.repositories;
 import android.databinding.DataBindingUtil;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,9 +17,11 @@ import java.util.List;
 
 public class RepositoriesListAdapter extends RecyclerView.Adapter<RepositoriesListAdapter.GithubClientViewHolder> {
     private List<Repository> repositoryList;
+    private OnRepositorySelectedListener listener;
 
-    public RepositoriesListAdapter() {
+    public RepositoriesListAdapter(OnRepositorySelectedListener listener) {
         this.repositoryList = new ArrayList<>();
+        this.listener = listener;
     }
 
     @NonNull
@@ -52,8 +53,8 @@ public class RepositoriesListAdapter extends RecyclerView.Adapter<RepositoriesLi
         notifyDataSetChanged();
     }
 
-    public static class GithubClientViewHolder extends RecyclerView.ViewHolder {
-        public GithubclientRecyclerViewBinding recyclerViewBinding;
+    class GithubClientViewHolder extends RecyclerView.ViewHolder {
+        GithubclientRecyclerViewBinding recyclerViewBinding;
         final View layoutClick;
 
 
@@ -64,12 +65,15 @@ public class RepositoriesListAdapter extends RecyclerView.Adapter<RepositoriesLi
         }
 
         void onBind(Repository repository) {
-            // Log.e("TAG", "onBind: " + repository.getName());
             recyclerViewBinding.setViewmodel(
                     new RecyclerViewItemViewModel(repository.getName(), repository.getDescription()));
 
             layoutClick.setOnClickListener(v ->
-                    RepositorySearchActivity.startCommitListActivity(repository.getUrl()));
+                    listener.onRepositorySelected(repository));
         }
+    }
+
+    interface OnRepositorySelectedListener {
+        void onRepositorySelected(Repository repository);
     }
 }

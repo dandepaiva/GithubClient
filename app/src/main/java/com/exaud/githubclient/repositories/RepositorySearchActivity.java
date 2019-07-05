@@ -11,8 +11,9 @@ import com.exaud.githubclient.GithubClientApplication;
 import com.exaud.githubclient.R;
 import com.exaud.githubclient.commits.CommitListActivity;
 import com.exaud.githubclient.databinding.ActivityRepositoriesListBinding;
+import com.exaud.githubclient.models.Repository;
 
-public class RepositorySearchActivity extends AppCompatActivity {
+public class RepositorySearchActivity extends AppCompatActivity implements RepositoriesListAdapter.OnRepositorySelectedListener {
     public final static String REPOSITORY_URL = "repository_url";
     private RepositoriesListAdapter githubAdapter;
     private RepositoryViewModel viewModel;
@@ -31,10 +32,9 @@ public class RepositorySearchActivity extends AppCompatActivity {
                 DataBindingUtil.setContentView(this, R.layout.activity_repositories_list);
 
         viewModel = ViewModelProviders.of(this).get(RepositoryViewModel.class);
-
         binding.setViewmodel(viewModel);
 
-        githubAdapter = new RepositoriesListAdapter();
+        githubAdapter = new RepositoriesListAdapter(this);
         binding.setAdapter(githubAdapter);
 
         if (savedInstanceState != null && viewModel.getRepositories() != null) {
@@ -56,37 +56,10 @@ public class RepositorySearchActivity extends AppCompatActivity {
         super.onStop();
     }
 
-    // TODO remove static
-    static void startCommitListActivity(String url) {
+    @Override
+    public void onRepositorySelected(Repository repository) {
         Intent commitListActivity = new Intent(GithubClientApplication.getContext(), CommitListActivity.class);
-        commitListActivity.putExtra(REPOSITORY_URL, url);
-        GithubClientApplication.getContext().startActivity(commitListActivity);
+        commitListActivity.putExtra(REPOSITORY_URL, repository.getUrl());
+        startActivity(commitListActivity);
     }
-
-    // UNUSED
-    /*
-    private void showToast(String text) {
-        Toast.makeText(GithubClientApplication.getContext(), text, Toast.LENGTH_SHORT).show();
-    }
-
-    void disableButtons() {
-        Button findButton = findViewById(R.id.button_show);
-        Button nextButton = findViewById(R.id.next);
-        Button previousButton = findViewById(R.id.previous);
-
-        findButton.setEnabled(false);
-        nextButton.setEnabled(false);
-        previousButton.setEnabled(false);
-    }
-
-    void enableButtons() {
-        Button findButton = findViewById(R.id.button_show);
-        Button nextButton = findViewById(R.id.next);
-        Button previousButton = findViewById(R.id.previous);
-
-        findButton.setEnabled(true);
-        nextButton.setEnabled(true);
-        previousButton.setEnabled(true);
-    }
-    */
 }
