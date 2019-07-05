@@ -6,8 +6,6 @@ import android.databinding.DataBindingUtil;
 import android.databinding.Observable;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 
 import com.exaud.githubclient.GithubClientApplication;
 import com.exaud.githubclient.R;
@@ -29,18 +27,15 @@ public class RepositorySearchActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        ActivityRepositoriesListBinding binding = DataBindingUtil.setContentView(this, R.layout.activity_repositories_list);
+        ActivityRepositoriesListBinding binding =
+                DataBindingUtil.setContentView(this, R.layout.activity_repositories_list);
+
         viewModel = ViewModelProviders.of(this).get(RepositoryViewModel.class);
+
         binding.setViewmodel(viewModel);
 
-        RecyclerView recyclerView = findViewById(R.id.repository_recycler_view);
-        recyclerView.setHasFixedSize(true);
-
-        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this);
-        recyclerView.setLayoutManager(layoutManager);
-
         githubAdapter = new RepositoriesListAdapter();
-        recyclerView.setAdapter(githubAdapter);
+        binding.setAdapter(githubAdapter);
 
         if (savedInstanceState != null && viewModel.getRepositories() != null) {
             githubAdapter.updateDataNodeArrayList(viewModel.getRepositories().get());

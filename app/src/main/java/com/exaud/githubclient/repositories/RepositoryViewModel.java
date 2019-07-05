@@ -1,6 +1,7 @@
 package com.exaud.githubclient.repositories;
 
 import android.arch.lifecycle.ViewModel;
+import android.arch.lifecycle.ViewModelProviders;
 import android.databinding.ObservableBoolean;
 import android.databinding.ObservableField;
 import android.view.View;
@@ -9,6 +10,7 @@ import android.widget.Toast;
 import com.exaud.githubclient.GithubClientApplication;
 import com.exaud.githubclient.GithubRepository;
 import com.exaud.githubclient.R;
+import com.exaud.githubclient.RecyclerViewItemViewModel;
 import com.exaud.githubclient.models.Repository;
 
 import java.util.List;
@@ -59,15 +61,14 @@ public class RepositoryViewModel extends ViewModel {
     public void onFindButtonPress(View view) {
         findButtonEnabled.set(false);
         user = userText.get();
+
         GithubRepository.getInstance().loadDataNodes(1, this.user, new GithubRepository.RepositoryCallback() {
             @Override
             public void showDataNodes(List<Repository> repositories) {
                 if (repositories.size() > 0) {
                     RepositoryViewModel.this.repositories.set(repositories);
+
                 }
-                /*TODO
-                * else { USER HAS NO PUBLIC REPOSITORIES }
-                */
                 page = 1;
                 pageNumberText.set(buildPageNumberText(page));
                 findButtonEnabled.set(true);

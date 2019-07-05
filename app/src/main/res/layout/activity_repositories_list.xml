@@ -5,6 +5,10 @@
         <variable
             name="viewmodel"
             type="com.exaud.githubclient.repositories.RepositoryViewModel" />
+
+        <variable
+            name="adapter"
+            type="com.exaud.githubclient.repositories.RepositoriesListAdapter" />
     </data>
 
 <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
@@ -47,6 +51,8 @@
         android:layout_width="match_parent"
         android:layout_height="425dp"
         android:layout_marginTop="0dp"
+        android:adapter="@{adapter}"
+        app:layoutManager="android.support.v7.widget.LinearLayoutManager"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/button_show" />
 

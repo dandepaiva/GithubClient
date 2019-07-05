@@ -1,13 +1,16 @@
 package com.exaud.githubclient.repositories;
 
+import android.databinding.DataBindingUtil;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 
 import com.exaud.githubclient.R;
+import com.exaud.githubclient.RecyclerViewItemViewModel;
+import com.exaud.githubclient.databinding.GithubclientRecyclerViewBinding;
 import com.exaud.githubclient.models.Repository;
 
 import java.util.ArrayList;
@@ -23,8 +26,11 @@ public class RepositoriesListAdapter extends RecyclerView.Adapter<RepositoriesLi
     @NonNull
     @Override
     public RepositoriesListAdapter.GithubClientViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
-        View nodeView = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.githubclient_recycler_view, viewGroup, false);
-        return new GithubClientViewHolder(nodeView);
+        GithubclientRecyclerViewBinding recyclerViewBinding =
+                DataBindingUtil.inflate(
+                        LayoutInflater.from(viewGroup.getContext()),
+                        R.layout.githubclient_recycler_view, viewGroup, false);
+        return new GithubClientViewHolder(recyclerViewBinding);
     }
 
     @Override
@@ -47,20 +53,20 @@ public class RepositoriesListAdapter extends RecyclerView.Adapter<RepositoriesLi
     }
 
     public static class GithubClientViewHolder extends RecyclerView.ViewHolder {
-        final TextView nameView;
-        final TextView descriptionView;
+        public GithubclientRecyclerViewBinding recyclerViewBinding;
         final View layoutClick;
 
-        GithubClientViewHolder(@NonNull View itemView) {
-            super(itemView);
-            nameView = itemView.findViewById(R.id.name_view);
-            descriptionView = itemView.findViewById(R.id.message_view);
+
+        GithubClientViewHolder(GithubclientRecyclerViewBinding recyclerViewBinding) {
+            super(recyclerViewBinding.getRoot());
+            this.recyclerViewBinding = recyclerViewBinding;
             layoutClick = itemView.findViewById(R.id.click_layout);
         }
 
         void onBind(Repository repository) {
-            nameView.setText(repository.getName());
-            descriptionView.setText(repository.getDescription());
+            // Log.e("TAG", "onBind: " + repository.getName());
+            recyclerViewBinding.setViewmodel(
+                    new RecyclerViewItemViewModel(repository.getName(), repository.getDescription()));
 
             layoutClick.setOnClickListener(v ->
                     RepositorySearchActivity.startCommitListActivity(repository.getUrl()));
